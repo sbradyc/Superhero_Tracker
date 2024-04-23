@@ -1,10 +1,6 @@
 name: Flake8 Lint
 
-on:
-    push:
-        branches: [ "main" ]
-        paths:
-            - '*.py'
+on: [ push ]
 
 permissions:
   contents: read
