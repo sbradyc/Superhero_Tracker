@@ -6,7 +6,7 @@ data from the database.
 """
 
 import unittest
-import requests
+# import requests
 
 
 class TestDBResults(unittest.TestCase):
