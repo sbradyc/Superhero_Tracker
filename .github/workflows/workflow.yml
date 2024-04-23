@@ -1,0 +1,10 @@
+name: GitHub Actions
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: pyupio/safety-action@v1
+          with:
+            api-key: ${{ secrets.SAFETY_API_KEY }}
