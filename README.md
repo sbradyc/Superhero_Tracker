@@ -12,7 +12,7 @@ With over 100 Heroes currently active across the world and a considerable number
 2. Clone the repo using `git clone https://github.com/sbradyc/Superhero_Tracker.git`.
 3. Change your directory to be inside the root of the project `cd Superhero_Tracker`.
 4. Install the packages needed and spin up pipenv shell using `pipenv install && pipenv shell`.
-5. To run the webserver do `flask --app main run`
+5. To run the webserver do `flask --app src/main run`
     - If you want to host the website in production mode then use `gunicorn -w 4 'main:app'`
 
 ## Developing
