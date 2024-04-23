@@ -1,4 +1,5 @@
-name: GitHub Actions
+name: Safety Scan
+
 run-name: ${{ github.actor }} submitted a PR.
 on: [push]
 jobs:
@@ -8,3 +9,4 @@ jobs:
         - uses: pyupio/safety-action@v1
           with:
             api-key: ${{ secrets.SAFETY_API_KEY }}
+            working-directory: src/
