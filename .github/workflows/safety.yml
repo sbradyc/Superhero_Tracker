@@ -3,7 +3,7 @@ name: Safety Scan
 run-name: ${{ github.actor }} submitted a PR.
 on: [push]
 jobs:
-  GitHub-Actions:
+  Safety-Scan:
     runs-on: ubuntu-latest
     steps:
         - uses: pyupio/safety-action@v1
