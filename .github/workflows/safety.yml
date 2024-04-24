@@ -17,3 +17,5 @@ jobs:
         - uses: pyupio/safety-action@v1
           with:
             api-key: ${{ secrets.SAFETY_API_KEY }}
+            debug: true
+            args: "--target ."
