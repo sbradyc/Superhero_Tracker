@@ -1,7 +1,11 @@
 name: Safety Scan
 
-run-name: ${{ github.actor }} submitted a PR.
-on: [ push ]
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "Pipfile.lock"
 
 permissions:
   contents: read
