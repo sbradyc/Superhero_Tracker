@@ -7,7 +7,7 @@ name = "pypi"
 flask = "*"
 gunicorn = "*"
 requests = "*"
-safety = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 
