@@ -1,4 +1,4 @@
-name: SQL SQL Tests
+name: SQL Tests
 
 on:
   push:
