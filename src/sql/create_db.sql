@@ -4,6 +4,7 @@ USE SuperTrackerDB;
 CREATE TABLE IF NOT EXISTS Countries (
     country_id INT NOT NULL AUTO_INCREMENT,
     country_name VARCHAR(50),
+    country_code VARCHAR(3),
     PRIMARY KEY (country_id)
 );
 
@@ -49,24 +50,28 @@ CREATE TABLE IF NOT EXISTS Missions (
 );
 
 CREATE TABLE IF NOT EXISTS Powers (
-  power_id INT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(50) NULL,
-  description TEXT(1000) NULL,
-  PRIMARY KEY (power_id)
+    power_id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NULL,
+    description TEXT(1000) NULL,
+    PRIMARY KEY (power_id)
 );
 
 CREATE TABLE IF NOT EXISTS HeroPowers (
-  hero_id INT NOT NULL,
-  power_id INT NOT NULL,
-  FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id) ON DELETE CASCADE,
-  FOREIGN KEY (power_id) REFERENCES Powers(power_id)
+    hero_power_id INT NOT NULL AUTO_INCREMENT,
+    hero_id INT NOT NULL,
+    power_id INT NOT NULL,
+    PRIMARY KEY (hero_power_id),
+    FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id) ON DELETE CASCADE,
+    FOREIGN KEY (power_id) REFERENCES Powers(power_id)
 );
 
 CREATE TABLE IF NOT EXISTS VillanPowers (
-  villain_id INT NOT NULL,
-  power_id INT NOT NULL,
-  FOREIGN KEY (villain_id) REFERENCES Villains(villain_id) ON DELETE CASCADE,
-  FOREIGN KEY (power_id) REFERENCES Powers(power_id)
+    villain_power_id INT NOT NULL AUTO_INCREMENT,
+    villain_id INT NOT NULL,
+    power_id INT NOT NULL,
+    PRIMARY KEY (villain_power_id),
+    FOREIGN KEY (villain_id) REFERENCES Villains(villain_id) ON DELETE CASCADE,
+    FOREIGN KEY (power_id) REFERENCES Powers(power_id)
 );
 
 SHOW TABLES;
