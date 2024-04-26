@@ -1,5 +1,9 @@
 # Superhero Tracker
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/mysql.yml?label=MySQL) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/safety.yml?label=Safety) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/lint.yml?label=Flake8) ![GitHub Issues](https://img.shields.io/github/issues/sbradyc/Superhero_Tracker?label=Issues)
+
+
+
 This is Kippen and Sean's CS340 Project.
 
 ## Overview
@@ -17,9 +21,21 @@ With over 100 Heroes currently active across the world and a considerable number
 
 ## Developing
 
-For more information about developing Superhero Tracker you can refer to [CONTRIBUTORS.md]()
+For more information about developing Superhero Tracker you can refer to [CONTRIBUTORS.md](https://github.com/sbradyc/Superhero_Tracker/blob/main/CONTRIBUTORS.md)
 
 ## Contributors
 
-[Kippen Lee](https://github.com/kippenlee)
-[Sean Brady](https://github.com/sbradyc)
+<p>
+    <h4>Kippen Lee</h4>
+  <a href="https://github.com/kippenlee">
+    <img src="https://skillicons.dev/icons?i=github" />
+  </a>
+</p>
+
+
+<p> 
+    <h4>Sean Brady</h4>
+  <a href="https://github.com/sbradyc">
+    <img src="https://skillicons.dev/icons?i=github" />
+  </a>
+</p>
