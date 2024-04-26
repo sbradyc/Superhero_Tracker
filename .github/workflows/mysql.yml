@@ -18,8 +18,7 @@ jobs:
         uses: mirromutth/mysql-action@v1.1
         with:
           mysql database: 'SuperTrackerDB'
-          mysql user: 'developer'
-          mysql password: ${{ secrets.DB_PASS }}
+          mysql root password: ${{ secrets.DB_PASS }}
       - name: Checkout Repo
         uses: actions/checkout@v2
       - name: Run Tests
@@ -28,4 +27,4 @@ jobs:
           GREEN='\033[0;32m'
           NC='\033[0m'
           echo -e "${GREEN}[+] Running SQL Tests...${NC}"
-          sudo mysql -u root < src/sql/create_db.sql
+          sudo mysql -u root -p${{ secrets.DB_PASS }} < src/sql/create_db.sql
