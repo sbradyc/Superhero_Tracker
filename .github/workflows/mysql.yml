@@ -22,8 +22,9 @@ jobs:
           mysql password: ${{ secrets.DB_PASS }}
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Run tests
+      - name: Run Tests
         run: |
+          sudo systemctl start mysql
           GREEN='\033[0;32m'
           NC='\033[0m'
           echo -e "${GREEN}[+] Running SQL Tests...${NC}"
