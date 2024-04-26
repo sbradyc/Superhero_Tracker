@@ -1,0 +1,30 @@
+name: SQL Tests
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "**.sql"
+
+permissions:
+  contents: read
+
+jobs:
+  setup_mysql:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql database: 'SuperTrackerDB'
+          mysql user: 'developer'
+          mysql password: ${{ secrets.DB_PASS }}
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          GREEN='\033[0;32m'
+          NC='\033[0m'
+          echo -e "${GREEN}[+] Running SQL Tests...${NC}"
+          sudo mysql -u root < src/sql/create_db.sql
