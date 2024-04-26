@@ -1,11 +1,11 @@
 name: SQL Tests
 
-on:
-  push:
-    branches:
-      - "main"
-    paths:
-      - "**.sql"
+on: [ push ]
+#   push:
+#     branches:
+#       - "main"
+#     paths:
+#       - "**.sql"
 
 permissions:
   contents: read
@@ -18,7 +18,8 @@ jobs:
         uses: mirromutth/mysql-action@v1.1
         with:
           mysql database: 'SuperTrackerDB'
-          mysql root password: ${{ secrets.DB_PASS }}
+          mysql user: 'developer'
+          mysql password: ${{ secrets.DB_PASS }}
       - name: Checkout Repo
         uses: actions/checkout@v2
       - name: Run Tests
