@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS Missions (
     FOREIGN KEY (city_id) REFERENCES Cities(city_id),
     FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id),
     FOREIGN KEY (villain_id) REFERENCES Villains(villain_id) ON DELETE CASCADE
-)
+);
 
 CREATE TABLE IF NOT EXISTS Powers (
   power_id INT NOT NULL AUTO_INCREMENT,
