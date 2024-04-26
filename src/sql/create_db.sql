@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS SuperTrackerDB;
 USE SuperTrackerDB;
 
+/* The next queries create the tables. */
 CREATE TABLE IF NOT EXISTS Countries (
     country_id INT NOT NULL AUTO_INCREMENT,
     country_name VARCHAR(50),
@@ -14,6 +15,7 @@ CREATE TABLE IF NOT EXISTS Cities (
     city_name VARCHAR(50),
     PRIMARY KEY (city_id),
     FOREIGN KEY (country_id) REFERENCES Countries(country_id) ON DELETE CASCADE
+    /* If the country is gone then the city is most likely gone with it */
 );
 
 CREATE TABLE IF NOT EXISTS Heroes (
@@ -23,7 +25,7 @@ CREATE TABLE IF NOT EXISTS Heroes (
     first_name VARCHAR(50) NULL,
     last_name VARCHAR(50) NULL,
     PRIMARY KEY (hero_id),
-    FOREIGN KEY (city_id) REFERENCES Cities(city_id) ON DELETE CASCADE
+    FOREIGN KEY (city_id) REFERENCES Cities(city_id)
 );
 
 CREATE TABLE IF NOT EXISTS Villains (
@@ -33,7 +35,7 @@ CREATE TABLE IF NOT EXISTS Villains (
     first_name VARCHAR(50) NULL,
     last_name VARCHAR(50) NULL,
     PRIMARY KEY (villain_id),
-    FOREIGN KEY (last_known_loc) REFERENCES Cities(city_id) ON DELETE CASCADE
+    FOREIGN KEY (last_known_loc) REFERENCES Cities(city_id)
 );
 
 CREATE TABLE IF NOT EXISTS Missions (
@@ -47,6 +49,7 @@ CREATE TABLE IF NOT EXISTS Missions (
     FOREIGN KEY (city_id) REFERENCES Cities(city_id),
     FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id),
     FOREIGN KEY (villain_id) REFERENCES Villains(villain_id) ON DELETE CASCADE
+    /* If the villain is deleted, delete the mission too since there is no more danger. */
 );
 
 CREATE TABLE IF NOT EXISTS Powers (
@@ -61,7 +64,7 @@ CREATE TABLE IF NOT EXISTS HeroPowers (
     hero_id INT NOT NULL,
     power_id INT NOT NULL,
     PRIMARY KEY (hero_power_id),
-    FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id) ON DELETE CASCADE,
+    FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id) ON DELETE CASCADE, /* If the hero is deleted, delete the power too. */
     FOREIGN KEY (power_id) REFERENCES Powers(power_id)
 );
 
@@ -70,7 +73,7 @@ CREATE TABLE IF NOT EXISTS VillanPowers (
     villain_id INT NOT NULL,
     power_id INT NOT NULL,
     PRIMARY KEY (villain_power_id),
-    FOREIGN KEY (villain_id) REFERENCES Villains(villain_id) ON DELETE CASCADE,
+    FOREIGN KEY (villain_id) REFERENCES Villains(villain_id) ON DELETE CASCADE, /* If the villain is deleted, delete the power too. */
     FOREIGN KEY (power_id) REFERENCES Powers(power_id)
 );
 
