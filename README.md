@@ -1,6 +1,7 @@
 # Superhero Tracker
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/mysql.yml?label=MySQL) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/safety.yml?label=Safety) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/lint.yml?label=Flake8)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/mysql.yml?label=MySQL) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/safety.yml?label=Safety) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sbradyc/Superhero_Tracker/lint.yml?label=Flake8) ![GitHub Issues](https://img.shields.io/github/issues/sbradyc/Superhero_Tracker?label=Issues)
+
 
 
 This is Kippen and Sean's CS340 Project.
