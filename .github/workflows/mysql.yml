@@ -28,4 +28,4 @@ jobs:
           GREEN='\033[0;32m'
           NC='\033[0m'
           echo -e "${GREEN}[+] Running SQL Tests...${NC}"
-          sudo mysql -u root -p${{ secrets.DB_PASS }} < src/sql/create_db.sql
+          sudo mysql -u developer -p${{ secrets.DB_PASS }} < src/sql/create_db.sql
