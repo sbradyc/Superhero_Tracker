@@ -1,1 +1,0 @@
--- CREATE OR REPLACE DATABASE {{ SuperTrackerDB }};
