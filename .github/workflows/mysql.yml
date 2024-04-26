@@ -22,4 +22,5 @@ jobs:
           mysql password: ${{ secrets.DB_PASS }}
       - name: Run tests
         run: |
+          ls -al
           sudo mysql -u root < src/sql/create_db.sql
