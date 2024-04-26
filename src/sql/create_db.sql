@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS HeroPowers (
     FOREIGN KEY (power_id) REFERENCES Powers(power_id)
 );
 
-CREATE TABLE IF NOT EXISTS VillanPowers (
+CREATE TABLE IF NOT EXISTS VillainPowers (
     villain_power_id INT NOT NULL AUTO_INCREMENT,
     villain_id INT NOT NULL,
     power_id INT NOT NULL,
