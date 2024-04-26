@@ -67,4 +67,4 @@ CREATE TABLE IF NOT EXISTS VillanPowers (
   power_id INT NOT NULL,
   FOREIGN KEY (villain_id) REFERENCES Villains(villain_id) ON DELETE CASCADE,
   FOREIGN KEY (power_id) REFERENCES Powers(power_id)
-)
+);
