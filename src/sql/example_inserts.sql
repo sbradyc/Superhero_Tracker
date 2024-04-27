@@ -1,3 +1,5 @@
+USE SuperTrackerDB;
+
 /* Insert example data into tables */
 INSERT INTO Countries (country_name, country_code)
 VALUES

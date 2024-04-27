@@ -23,4 +23,5 @@ jobs:
           NC='\033[0m'
           echo -e "${GREEN}[+] Running SQL Tests...${NC}"
           sudo mysql -u root -proot < src/sql/create_db.sql
+          sudo mysql -u root -proot < src/sql/example_inserts.sql
           sudo systemctl stop mysql
