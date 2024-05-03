@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS Missions (
     mission_id INT NOT NULL AUTO_INCREMENT,
     hero_id INT NOT NULL,
     villain_id INT NOT NULL,
-    mission_codename VARCHAR(50) NOT NULL,
+    mission_codename VARCHAR(20) NOT NULL,
     description TEXT(1000) NOT NULL,
     PRIMARY KEY (mission_id),
     FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id),
