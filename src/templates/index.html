@@ -1,6 +1,8 @@
 <html>
     <head>
-        <title>Flask Static Demo</title>
+        <title>Superhero Tracker</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     </head>
     <body>
         <h1>{{message}}</h1>
