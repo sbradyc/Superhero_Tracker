@@ -71,3 +71,4 @@ SELECT * FROM Missions;
 SELECT * FROM Powers;
 SELECT * FROM HeroPowers;
 SELECT * FROM VillainPowers;
+SELECT * FROM MissionCities;
