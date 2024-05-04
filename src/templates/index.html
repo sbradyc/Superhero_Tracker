@@ -8,9 +8,12 @@
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     </head>
     <body>
-        <h1>{{message}}</h1>
+        <p class="welcome">
+            Welcome Shield Agent<br></br>To get started with the data utilities navigate to one of the pages using the navbar above.
+        </p>
         <nav class="navbar">
             <ul class="nav-links">
+                <li><a href="/">Home</a></li>
                 <li><a href="/cities">Cities</a></li>
                 <li><a href="/countries">Countries</a></li>
                 <li><a href="/heroes">Heroes</a></li>
