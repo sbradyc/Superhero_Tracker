@@ -7,15 +7,24 @@ START TRANSACTION;
 SET FOREIGN_KEY_CHECKS=0;
 SET AUTOCOMMIT = 0;
 
+DROP TABLE IF EXISTS Countries;
+DROP TABLE IF EXISTS Cities;
+DROP TABLE IF EXISTS Heroes;
+DROP TABLE IF EXISTS Villains;
+DROP TABLE IF EXISTS Missions;
+DROP TABLE IF EXISTS Powers;
+DROP TABLE IF EXISTS HeroPowers;
+DROP TABLE IF EXISTS VillainPowers;
+
 /* The next queries create the tables. */
-CREATE OR REPLACE TABLE Countries (
+CREATE TABLE Countries (
     country_id INT NOT NULL AUTO_INCREMENT,
     country_name VARCHAR(50),
     country_code VARCHAR(3),
     PRIMARY KEY (country_id)
 );
 
-CREATE OR REPLACE TABLE Cities (
+CREATE TABLE Cities (
     city_id INT NOT NULL AUTO_INCREMENT,
     country_id INT NOT NULL,
     city_name VARCHAR(50),
@@ -24,7 +33,7 @@ CREATE OR REPLACE TABLE Cities (
     /* If the country is gone then the city is most likely gone with it */
 );
 
-CREATE OR REPLACE TABLE Heroes (
+CREATE TABLE Heroes (
     hero_id INT NOT NULL AUTO_INCREMENT,
     city_id INT NOT NULL,
     pseudonym VARCHAR(50) NOT NULL,
@@ -34,7 +43,7 @@ CREATE OR REPLACE TABLE Heroes (
     FOREIGN KEY (city_id) REFERENCES Cities(city_id)
 );
 
-CREATE OR REPLACE TABLE Villains (
+CREATE TABLE Villains (
     villain_id INT NOT NULL AUTO_INCREMENT,
     last_known_loc INT NOT NULL,
     pseudonym VARCHAR(50) NOT NULL,
@@ -44,7 +53,7 @@ CREATE OR REPLACE TABLE Villains (
     FOREIGN KEY (last_known_loc) REFERENCES Cities(city_id)
 );
 
-CREATE OR REPLACE TABLE Missions (
+CREATE TABLE Missions (
     mission_id INT NOT NULL AUTO_INCREMENT,
     hero_id INT NOT NULL,
     villain_id INT NOT NULL,
@@ -58,14 +67,14 @@ CREATE OR REPLACE TABLE Missions (
     /* If the villain is deleted, delete the mission too since there is no more danger. */
 );
 
-CREATE OR REPLACE TABLE Powers (
+CREATE TABLE Powers (
     power_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NULL,
     description TEXT(1000) NULL,
     PRIMARY KEY (power_id)
 );
 
-CREATE OR REPLACE TABLE HeroPowers (
+CREATE TABLE HeroPowers (
     hero_power_id INT NOT NULL AUTO_INCREMENT,
     hero_id INT NOT NULL,
     power_id INT NOT NULL,
@@ -74,7 +83,7 @@ CREATE OR REPLACE TABLE HeroPowers (
     FOREIGN KEY (power_id) REFERENCES Powers(power_id) ON DELETE CASCADE
 );
 
-CREATE OR REPLACE TABLE VillainPowers (
+CREATE TABLE VillainPowers (
     villain_power_id INT NOT NULL AUTO_INCREMENT,
     villain_id INT NOT NULL,
     power_id INT NOT NULL,
