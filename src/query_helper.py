@@ -19,7 +19,7 @@ def get_country_id(cursor: CURSOR_OBJ,
     return country_entry.get("country_id", -1)
 
 
-def get_cities_id(cursor: CURSOR_OBJ) -> list[dict]:
+def get_cities_data(cursor: CURSOR_OBJ) -> list[dict]:
     query: str = """
     SELECT
         city_id,
@@ -33,7 +33,7 @@ def get_cities_id(cursor: CURSOR_OBJ) -> list[dict]:
     return cursor.fetchall()
 
 
-def get_heroes_id(cursor: CURSOR_OBJ) -> list[dict]:
+def get_heroes_data(cursor: CURSOR_OBJ) -> list[dict]:
     query: str = """
     SELECT
         hero_id,
@@ -47,7 +47,7 @@ def get_heroes_id(cursor: CURSOR_OBJ) -> list[dict]:
     return cursor.fetchall()
 
 
-def get_villains_id(cursor: CURSOR_OBJ) -> list[dict]:
+def get_villains_data(cursor: CURSOR_OBJ) -> list[dict]:
     query: str = """
     SELECT
         villain_id,

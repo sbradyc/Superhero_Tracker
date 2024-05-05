@@ -6,23 +6,17 @@ import mysql.connector
 import query_helper
 
 app = Flask(__name__)
-# CONFIG = {
-#     "host":     "mysql.engr.oregonstate.edu",
-#     "user":     "username",
-#     "password": "password",
-#     "database": "cs340_username"
-# }
 CONFIG = {
-    "host":     "localhost",
-    "user":     "halsen",
-    "password": "Zxcv11@#",
-    "database": "SuperTrackerDB"
+    "host":     "mysql.engr.oregonstate.edu",
+    "user":     "username",
+    "password": "password",
+    "database": "cs340_username"
 }
 
 try:
     conn = mysql.connector.connect(**CONFIG)
     cursor = conn.cursor(dictionary=True)
-    print(Fore.GREEN + "[+] Successfully connected to database")
+    print(Fore.GREEN + "[+] Successfully connected to database" + Fore.RESET)
 
     @app.route("/")
     def main():
@@ -32,29 +26,29 @@ try:
 
     @app.route("/cities")
     def cities():
-        query: str = """
-        SELECT
-            Cities.city_id AS id,
-            Cities.city_name AS city,
-            Countries.country_name AS country
-        FROM Cities
-        INNER JOIN Countries ON Countries.country_id = Cities.country_id;
-        """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        # query: str = """
+        # SELECT
+        #     Cities.city_id AS id,
+        #     Cities.city_name AS city,
+        #     Countries.country_name AS country
+        # FROM Cities
+        # INNER JOIN Countries ON Countries.country_id = Cities.country_id;
+        # """
+        # cursor.execute(query)
+        data = []  # cursor.fetchall()
         return render_template("cities.html", data=data)
 
     @app.route("/countries")
     def countries():
-        query: str = """
-        SELECT
-            Countries.country_id AS id,
-            Countries.country_name AS country,
-            Countries.country_code AS code
-        FROM Countries;
-        """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        # query: str = """
+        # SELECT
+        #     Countries.country_id AS id,
+        #     Countries.country_name AS country,
+        #     Countries.country_code AS code
+        # FROM Countries;
+        # """
+        # cursor.execute(query)
+        data = []  # cursor.fetchall()
         return render_template("countries.html", data=data)
 
     @app.route("/heroes")
@@ -130,9 +124,9 @@ try:
     @app.route("/missions-add", methods=['GET', 'POST'])
     def missions_add():
         if request.method == "GET":
-            heroes: list[dict] = []  # query_helper.get_heroes_id(cursor)
-            villains: list[dict] = []  # query_helper.get_villains_id(cursor)
-            cities: list[dict] = []  # query_helper.get_cities_id(cursor)
+            heroes: list[dict] = []  # query_helper.get_heroes_data(cursor)
+            villains: list[dict] = []  # query_helper.get_villains_data(cursor)
+            cities: list[dict] = []  # query_helper.get_cities_data(cursor)
             return render_template("missions-add.html",
                                    heroes=heroes,
                                    villains=villains,
@@ -171,52 +165,55 @@ try:
     @app.route("/cities-update/<id>", methods=['GET', 'POST'])
     def cities_update(id: int):
         if request.method == "GET":
-            defaults = query_helper.get_city(cursor, id)
-            country_id: int = defaults["country_id"]
-            country_name = query_helper.get_country_name(cursor, country_id)
+            # defaults: dict = query_helper.get_city(cursor, id)
+            # country_id: int = defaults["country_id"]
+            # country_name: str = query_helper.get_country_name(cursor,
+            #                                                   country_id)
             return render_template("cities-update.html",
-                                   defaults=defaults,
-                                   country_name=country_name)
+                                   defaults={"city_id": 1,
+                                             "city_name": "example"},
+                                   country_name="country_name")
         else:
-            city_name: str = request.form.get("city_name")
-            country_name: str = request.form.get("country_name")
-            country_id: int = query_helper.get_country_id(cursor,
-                                                          country_name)
-            if country_id == -1:
-                return render_template("cities-update.html",
-                                       message=query_helper.NO_COUNTRY_NAME,
-                                       defaults={"city_id": id,
-                                                 "city_name": city_name},
-                                       country_name=country_name)
-            query: str = f"""
-            UPDATE Cities
-            SET
-                city_name = '{city_name}',
-                country_id = {country_id}
-            WHERE city_id = {id};
-            """
-            cursor.execute(query)
-            conn.commit()
+            # city_name: str = request.form.get("city_name")
+            # country_name: str = request.form.get("country_name")
+            # country_id: int = query_helper.get_country_id(cursor,
+            #                                               country_name)
+            # if country_id == -1:
+            #     return render_template("cities-update.html",
+            #                            message=query_helper.NO_COUNTRY_NAME,
+            #                            defaults={"city_id": id,
+            #                                      "city_name": city_name},
+            #                            country_name=country_name)
+            # query: str = f"""
+            # UPDATE Cities
+            # SET
+            #     city_name = '{city_name}',
+            #     country_id = {country_id}
+            # WHERE city_id = {id};
+            # """
+            # cursor.execute(query)
+            # conn.commit()
             return redirect(url_for("cities"))
 
     @app.route("/countries-update/<id>", methods=['GET', 'POST'])
     def countries_update(id: int):
         if request.method == "GET":
-            country = query_helper.get_country(cursor, id)
+            # country: dict = query_helper.get_country(cursor, id)
             return render_template("countries-update.html",
-                                   country=country)
+                                   country={"country_name": "example",
+                                            "country_code": "example"})
         else:
-            country_name: str = request.form.get("country_name")
-            country_code: str = request.form.get("country_code")
-            query: str = f"""
-            UPDATE Countries
-            SET
-                country_name = '{country_name}',
-                country_code = '{country_code}'
-            WHERE country_id = {id};
-            """
-            cursor.execute(query)
-            conn.commit()
+            # country_name: str = request.form.get("country_name")
+            # country_code: str = request.form.get("country_code")
+            # query: str = f"""
+            # UPDATE Countries
+            # SET
+            #     country_name = '{country_name}',
+            #     country_code = '{country_code}'
+            # WHERE country_id = {id};
+            # """
+            # cursor.execute(query)
+            # conn.commit()
             return redirect(url_for("countries"))
 
     @app.route("/heroes-update/<id>", methods=['GET', 'POST'])
@@ -330,11 +327,14 @@ try:
 except (mysql.connector.Error,
         mysql.connector.ProgrammingError,
         ValueError) as e:
-    print(Fore.RED + f"[-] Error connecting to or using cursor with MySQL {e}")
+    print(Fore.RED +
+          f"[-] Error connecting to or using cursor with MySQL {e}" +
+          Fore.RESET)
     if "cursor" in globals() and cursor is not None:
         cursor.close()
-        print(Fore.YELLOW + "[~] MySQL cursor closed")
-    if conn.is_connected():
+        print(Fore.YELLOW + "[~] MySQL cursor closed" + Fore.RESET)
+    if "conn" in globals() and conn.is_connected():
         conn.close()
-        print(Fore.YELLOW + "[~] MySQL connection closed")
-    print(Fore.YELLOW + "[~] Program Exiting...")
+        print(Fore.YELLOW + "[~] MySQL connection closed" + Fore.RESET)
+    print(Fore.YELLOW + "[~] Program Exiting..." + Fore.RESET)
+    exit(1)
