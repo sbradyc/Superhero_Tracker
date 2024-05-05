@@ -8,7 +8,6 @@
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     </head>
     <body>
-        <h1>{{message}}</h1>
         <nav class="navbar">
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
@@ -20,5 +19,17 @@
                 <li><a href="/powers">Powers</a></li>
             </ul>
         </nav>
+        <h2 class="form-header">Update a City</h2>
+        <h3 class="error-message">{{ message }}</h3>
+        <form action="/cities-update/{{defaults.city_id}}" method="post">
+            <label for="city_name">City Name: </label>
+            <input type="text" id="city_name" name="city_name" value="{{defaults.city_name}}" required><br>
+            <label for="country_name">Country: </label>
+            <input type="text" id="country_name" name="country_name" value="{{country_name}}" required><br>
+            <div class="form-actions">
+                <input type="submit" class="submit-button" value="Submit">
+                <a href="/cities" class="cancel-button">Cancel</a>
+            </div>
+        </form>
     </body>
 </html>

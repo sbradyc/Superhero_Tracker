@@ -63,21 +63,21 @@ try:
 
     @app.route("/missions")
     def missions():
-        query: str = """
-        SELECT
-            Missions.mission_id AS id,
-            Missions.mission_codename AS mission_name,
-            Heroes.pseudonym AS hero_name,
-            Villains.pseudonym AS villain_name,
-            Cities.city_name AS city,
-            Missions.description AS description
-        FROM Missions
-        INNER JOIN Heroes ON Heroes.hero_id = Missions.hero_id
-        INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
-        INNER JOIN Cities ON Cities.city_id = Missions.city_id;
-        """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        # query: str = """
+        # SELECT
+        #     Missions.mission_id AS id,
+        #     Missions.mission_codename AS mission_name,
+        #     Heroes.pseudonym AS hero_name,
+        #     Villains.pseudonym AS villain_name,
+        #     Cities.city_name AS city,
+        #     Missions.description AS description
+        # FROM Missions
+        # INNER JOIN Heroes ON Heroes.hero_id = Missions.hero_id
+        # INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
+        # INNER JOIN Cities ON Cities.city_id = Missions.city_id;
+        # """
+        # cursor.execute(query)
+        data = []  # cursor.fetchall()
         return render_template("missions.html", data=data)
 
     @app.route("/powers")
@@ -170,11 +170,54 @@ try:
 
     @app.route("/cities-update/<id>", methods=['GET', 'POST'])
     def cities_update(id: int):
-        return render_template("cities-update.html")
+        if request.method == "GET":
+            defaults = query_helper.get_city(cursor, id)
+            country_id: int = defaults["country_id"]
+            country_name = query_helper.get_country_name(cursor, country_id)
+            return render_template("cities-update.html",
+                                   defaults=defaults,
+                                   country_name=country_name)
+        else:
+            city_name: str = request.form.get("city_name")
+            country_name: str = request.form.get("country_name")
+            country_id: int = query_helper.get_country_id(cursor,
+                                                          country_name)
+            if country_id == -1:
+                return render_template("cities-update.html",
+                                       message=query_helper.NO_COUNTRY_NAME,
+                                       defaults={"city_id": id,
+                                                 "city_name": city_name},
+                                       country_name=country_name)
+            query: str = f"""
+            UPDATE Cities
+            SET
+                city_name = '{city_name}',
+                country_id = {country_id}
+            WHERE city_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
+            return redirect(url_for("cities"))
 
     @app.route("/countries-update/<id>", methods=['GET', 'POST'])
     def countries_update(id: int):
-        return render_template("countries-update.html")
+        if request.method == "GET":
+            country = query_helper.get_country(cursor, id)
+            return render_template("countries-update.html",
+                                   country=country)
+        else:
+            country_name: str = request.form.get("country_name")
+            country_code: str = request.form.get("country_code")
+            query: str = f"""
+            UPDATE Countries
+            SET
+                country_name = '{country_name}',
+                country_code = '{country_code}'
+            WHERE country_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
+            return redirect(url_for("countries"))
 
     @app.route("/heroes-update/<id>", methods=['GET', 'POST'])
     def heroes_update(id: int):
@@ -182,7 +225,35 @@ try:
 
     @app.route("/missions-update/<id>", methods=['GET', 'POST'])
     def missions_update(id: int):
-        return render_template("missions-update.html")
+        if request.method == "GET":
+            mission = []  # query_helper.get_mission(cursor, id)
+            heroes: list[dict] = []  # query_helper.get_heroes_id(cursor)
+            villains: list[dict] = []  # query_helper.get_villains_id(cursor)
+            cities: list[dict] = []  # query_helper.get_cities_id(cursor)
+            return render_template("missions-update.html",
+                                   defaults=mission,
+                                   heroes=heroes,
+                                   villains=villains,
+                                   cities=cities)
+        else:
+            # mission_name: str = request.form.get("mission_name")
+            # hero_id: int = int(request.form.get("hero_id"))
+            # villain_id: int = int(request.form.get("villain_id"))
+            # city_id: int = int(request.form.get("city_id"))
+            # description: str = request.form.get("description")
+            # query: str = f"""
+            # UPDATE Missions
+            # SET
+            #     hero_id = {hero_id},
+            #     villain_id = {villain_id},
+            #     city_id = {city_id},
+            #     mission_codename = '{mission_name}',
+            #     description = '{description}'
+            # WHERE mission_id = {id};
+            # """
+            # cursor.execute(query)
+            # conn.commit()
+            return redirect(url_for("missions"))
 
     @app.route("/powers-update/<id>", methods=['GET', 'POST'])
     def powers_update(id: int):
