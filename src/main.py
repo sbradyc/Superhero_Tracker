@@ -6,18 +6,13 @@ import mysql.connector
 import query_helper
 
 app = Flask(__name__)
-# CONFIG = {
-#     "host":     "mysql.engr.oregonstate.edu",
-#     "user":     "username",
-#     "password": "password",
-#     "database": "cs340_username"
-# }
 CONFIG = {
-    "host":     "localhost",
-    "user":     "halsen",
-    "password": "Zxcv11@#",
-    "database": "SuperTrackerDB"
+    "host":     "mysql.engr.oregonstate.edu",
+    "user":     "username",
+    "password": "password",
+    "database": "cs340_username"
 }
+
 try:
     conn = mysql.connector.connect(**CONFIG)
     cursor = conn.cursor(dictionary=True)
@@ -31,29 +26,29 @@ try:
 
     @app.route("/cities")
     def cities():
-        query: str = """
-        SELECT
-            Cities.city_id AS id,
-            Cities.city_name AS city,
-            Countries.country_name AS country
-        FROM Cities
-        INNER JOIN Countries ON Countries.country_id = Cities.country_id;
-        """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        # query: str = """
+        # SELECT
+        #     Cities.city_id AS id,
+        #     Cities.city_name AS city,
+        #     Countries.country_name AS country
+        # FROM Cities
+        # INNER JOIN Countries ON Countries.country_id = Cities.country_id;
+        # """
+        # cursor.execute(query)
+        data = []  # cursor.fetchall()
         return render_template("cities.html", data=data)
 
     @app.route("/countries")
     def countries():
-        query: str = """
-        SELECT
-            Countries.country_id AS id,
-            Countries.country_name AS country,
-            Countries.country_code AS code
-        FROM Countries;
-        """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        # query: str = """
+        # SELECT
+        #     Countries.country_id AS id,
+        #     Countries.country_name AS country,
+        #     Countries.country_code AS code
+        # FROM Countries;
+        # """
+        # cursor.execute(query)
+        data = []  # cursor.fetchall()
         return render_template("countries.html", data=data)
 
     @app.route("/heroes")
@@ -62,21 +57,21 @@ try:
 
     @app.route("/missions")
     def missions():
-        query: str = """
-        SELECT
-            Missions.mission_id AS id,
-            Missions.mission_codename AS mission_name,
-            Heroes.pseudonym AS hero_name,
-            Villains.pseudonym AS villain_name,
-            Cities.city_name AS city,
-            Missions.description AS description
-        FROM Missions
-        INNER JOIN Heroes ON Heroes.hero_id = Missions.hero_id
-        INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
-        INNER JOIN Cities ON Cities.city_id = Missions.city_id;
-        """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        # query: str = """
+        # SELECT
+        #     Missions.mission_id AS id,
+        #     Missions.mission_codename AS mission_name,
+        #     Heroes.pseudonym AS hero_name,
+        #     Villains.pseudonym AS villain_name,
+        #     Cities.city_name AS city,
+        #     Missions.description AS description
+        # FROM Missions
+        # INNER JOIN Heroes ON Heroes.hero_id = Missions.hero_id
+        # INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
+        # INNER JOIN Cities ON Cities.city_id = Missions.city_id;
+        # """
+        # cursor.execute(query)
+        data = []  # cursor.fetchall()
         return render_template("missions.html", data=data)
 
     @app.route("/powers")
