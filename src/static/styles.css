@@ -17,13 +17,49 @@ h1, h2, h3, h4, h5 {
     text-align: center;
 }
 
-.welcome {
-    text-align: center;
-    margin-top: 100px;
-    font-size: larger;
+
+table {
+    width: 50%;
+    border-collapse: collapse;
+    margin: 0 auto; /* Ensures the table is centered */
 }
 
-/* Styling for the navigation bar */
+th, td {
+    border: 2px solid #dddddd;
+    text-align: left;
+    background-color: #000000a8;
+    padding: 8px;
+}
+
+th {
+    text-align: center;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    margin-right: auto;
+}
+
+.button:hover {background-color: #45a049;}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    margin: 100px auto 20px;
+}
+
 .navbar {
     background-color: #333;
     color: #ffffff;
@@ -54,4 +90,54 @@ h1, h2, h3, h4, h5 {
 
 .nav-links a:hover {
     background-color: #555;
+}
+
+.update-link, .delete-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding: 10px 0;
+    color: white;
+    text-decoration: none;
+}
+
+.update-cell, .delete-cell {
+    padding: 0px;
+}
+
+.update-link {
+    background-color: #1519ff;
+}
+
+.update-link:hover {
+    background-color: #0003c7;
+}
+
+.delete-link {
+    background-color: #df0000;
+}
+
+.delete-link:hover {
+    background-color: #a00000;
+}
+
+.table-header {
+    flex-grow: 1;
+}
+
+.table-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.welcome, .table-header {
+    text-align: center;
+    font-size: larger;
+}
+
+.welcome {
+    margin-top: 100px;
 }

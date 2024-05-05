@@ -8,7 +8,6 @@
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     </head>
     <body>
-        <h1>{{message}}</h1>
         <nav class="navbar">
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
@@ -20,5 +19,33 @@
                 <li><a href="/powers">Powers</a></li>
             </ul>
         </nav>
+        <section class="table">
+            <div class="header">
+                <a href="/missions-add" class="button">Add Mission</a>
+                <h2 class="table-header">Missions</h2>
+            </div>
+            <table>
+                <tr>
+                    <th>Mission Codename</th>
+                    <th>Assigned Hero</th>
+                    <th>Villain</th>
+                    <th>City Name</th>
+                    <th>Mission Desc.</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{ item.mission_name }}</td>
+                    <td>{{ item.hero_name }}</td>
+                    <td>{{ item.villain_name }}</td>
+                    <td>{{ item.city }}</td>
+                    <td>{{ item.description }}</td>
+                    <td class="update-cell"><a href="/missions-update/{{ item.id }}" class="update-link">Edit</a></td>
+                    <td class="delete-cell"><a href="/missions-delete/{{ item.id }}" class="delete-link" onclick="return confirm('Are you sure?');">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
     </body>
 </html>

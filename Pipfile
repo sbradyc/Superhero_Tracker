@@ -8,6 +8,7 @@ flask = "*"
 gunicorn = "*"
 requests = "*"
 mysql-connector-python = "*"
+colorama = "*"
 
 [dev-packages]
 

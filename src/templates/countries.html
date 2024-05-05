@@ -8,7 +8,6 @@
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     </head>
     <body>
-        <h1>{{message}}</h1>
         <nav class="navbar">
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
@@ -20,5 +19,27 @@
                 <li><a href="/powers">Powers</a></li>
             </ul>
         </nav>
+        <section class="table">
+            <div class="header">
+                <a href="/countries-add" class="button">Add Country</a>
+                <h2 class="table-header">Countries</h2>
+            </div>
+            <table>
+                <tr>
+                    <th>Country Name</th>
+                    <th>Country Code</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{ item.country }}</td>
+                    <td>{{ item.code }}</td>
+                    <td class="update-cell"><a href="/countries-update/{{ item.id }}" class="update-link">Edit</a></td>
+                    <td class="delete-cell"><a href="/countries-delete/{{ item.id }}" class="delete-link" onclick="return confirm('Are you sure?');">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
     </body>
 </html>

@@ -2,14 +2,16 @@ USE SuperTrackerDB;
 
 /* SELECT for Countries Table */
 SELECT
-    country_name AS Country,
-    country_code AS Code
+    Countries.country_id AS id,
+    Countries.country_name AS country,
+    Countries.country_code AS code
 FROM Countries;
 
 /* SELECT for Cities Table */
 SELECT
-    city_name AS City,
-    Countries.country_name AS Country
+    Cities.city_id AS id,
+    Cities.city_name AS city,
+    Countries.country_name AS country
 FROM Cities
 INNER JOIN Countries ON Countries.country_id = Cities.country_id;
 
@@ -41,11 +43,12 @@ GROUP BY Villains.villain_id, Villains.pseudonym, Villains.first_name, Villains.
 
 /* SELECT for Missions Table */
 SELECT
-    Missions.mission_codename AS CODENAME,
-    Heroes.pseudonym AS Hero,
-    Villains.pseudonym AS Villain,
-    Cities.city_name AS City,
-    Missions.description AS Description
+    Missions.mission_id AS id,
+    Missions.mission_codename AS mission_name,
+    Heroes.pseudonym AS hero_name,
+    Villains.pseudonym AS villain_name,
+    Cities.city_name AS city,
+    Missions.description AS description
 FROM Missions
 INNER JOIN Heroes ON Heroes.hero_id = Missions.hero_id
 INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
