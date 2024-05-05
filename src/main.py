@@ -3,7 +3,7 @@
 from colorama import Fore
 from flask import Flask, redirect, render_template, request, url_for
 import mysql.connector
-import query_helper
+# import query_helper
 
 app = Flask(__name__)
 CONFIG = {
@@ -14,9 +14,9 @@ CONFIG = {
 }
 
 try:
-    conn = mysql.connector.connect(**CONFIG)
-    cursor = conn.cursor(dictionary=True)
-    print(Fore.GREEN + "[+] Successfully connected to database" + Fore.RESET)
+    # conn = mysql.connector.connect(**CONFIG)
+    # cursor = conn.cursor(dictionary=True)
+    # print(Fore.GREEN + "[+] Successfully connected to database" + Fore.RESET)
 
     @app.route("/")
     def main():
@@ -224,9 +224,9 @@ try:
     def missions_update(id: int):
         if request.method == "GET":
             mission = []  # query_helper.get_mission(cursor, id)
-            heroes: list[dict] = []  # query_helper.get_heroes_id(cursor)
-            villains: list[dict] = []  # query_helper.get_villains_id(cursor)
-            cities: list[dict] = []  # query_helper.get_cities_id(cursor)
+            heroes: list[dict] = []  # query_helper.get_heroes_data(cursor)
+            villains: list[dict] = []  # query_helper.get_villains_data(cursor)
+            cities: list[dict] = []  # query_helper.get_cities_data(cursor)
             return render_template("missions-update.html",
                                    defaults=mission,
                                    heroes=heroes,
@@ -287,7 +287,7 @@ try:
     @app.route("/heroes-delete/<id>")
     def heroes_delete(id: int):
         # query: str = f"""
-        # DELETE FROM Heores
+        # DELETE FROM Heroes
         # WHERE hero_id = {id};
         # """
         # cursor.execute(query)
@@ -330,11 +330,14 @@ except (mysql.connector.Error,
     print(Fore.RED +
           f"[-] Error connecting to or using cursor with MySQL {e}" +
           Fore.RESET)
-    if "cursor" in globals() and cursor is not None:
-        cursor.close()
-        print(Fore.YELLOW + "[~] MySQL cursor closed" + Fore.RESET)
-    if "conn" in globals() and conn.is_connected():
-        conn.close()
-        print(Fore.YELLOW + "[~] MySQL connection closed" + Fore.RESET)
+    # if "cursor" in globals() and cursor is not None:
+    #     cursor.close()
+    #     print(Fore.YELLOW + "[~] MySQL cursor closed" + Fore.RESET)
+    # if "conn" in globals() and conn.is_connected():
+    #     conn.close()
+    #     print(Fore.YELLOW + "[~] MySQL connection closed" + Fore.RESET)
     print(Fore.YELLOW + "[~] Program Exiting..." + Fore.RESET)
     exit(1)
+
+else:
+    print(Fore.GREEN + "[+] Server started..." + Fore.RESET)
