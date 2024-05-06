@@ -20,5 +20,15 @@
                 <li><a href="/powers">Powers</a></li>
             </ul>
         </nav>
+        <form action="/powers-add" method="post">
+            <label for="name">Name: </label>
+            <input type="text" id="name" name="name" value="{{power.name}} required><br>
+            <label for="description">Description: </label>
+            <input type="text" id="description" name="description" value="{{power.description}} required><br>
+            <div class="form-actions">
+                <input type="submit" class="submit-button" value="Submit">
+                <a href="/powers" class="cancel-button">Cancel</a>
+            </div>
+        </form>
     </body>
 </html>

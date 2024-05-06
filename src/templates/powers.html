@@ -20,5 +20,27 @@
                 <li><a href="/powers">Powers</a></li>
             </ul>
         </nav>
+        <section class="table">
+            <div class="header">
+                <a href="/powers-add" class="button">Add Power</a>
+                <h2 class="table-header">Powers</h2>
+            </div>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.description }}</td>
+                    <td class="update-cell"><a href="/powers-update/{{ item.id }}" class="update-link">Edit</a></td>
+                    <td class="delete-cell"><a href="/powers-delete/{{ item.id }}" class="delete-link" onclick="return confirm('Are you sure?');">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
     </body>
 </html>
