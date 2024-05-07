@@ -48,7 +48,7 @@ try:
         # FROM Countries;
         # """
         # cursor.execute(query)
-        data = []  # cursor.fetchall()
+        data = [{"id": 1, "country": "United States of America", "code": "USA"}]  # cursor.fetchall()
         return render_template("countries.html", data=data)
 
     @app.route("/heroes")
