@@ -80,7 +80,8 @@ try:
 
     @app.route("/villains")
     def villains():
-        return render_template("villains.html")
+        data = [{"id": 1, "pseudonym": "Doctor Octopus", "first_name": "Otto", "last_name": "Octavius", "city": "New York", "powers": ["Cybernetic Tentacles"]}]
+        return render_template("villains.html", data=data)
 
     @app.route("/cities-add", methods=['GET', 'POST'])
     def cities_add():
@@ -258,7 +259,8 @@ try:
 
     @app.route("/villains-update/<id>", methods=['GET', 'POST'])
     def villains_update(id: int):
-        return render_template("villains-update.html")
+        data = {"id": 1, "pseudonym": "Doctor Octopus", "first_name": "Otto", "last_name": "Octavius", "city": "New York", "powers": ["Cybernetic Tentacles"]}
+        return render_template("villains-update.html", villain=data)
 
     """
     The following routes will do a delete query and then reload
