@@ -31,6 +31,7 @@
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>City</th>
+                    <th>Powers</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
@@ -40,6 +41,13 @@
                     <td>{{ item.first_name }}</td>
                     <td>{{ item.last_name }}</td>
                     <td>{{ item.city }}</td>
+                    <td>
+                        <ul>
+                            {% for power in item.powers %}
+                                <li>{{ power.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
                     <td class="update-cell"><a href="/heroes-update/{{ item.id }}" class="update-link">Edit</a></td>
                     <td class="delete-cell"><a href="/heroes-delete/{{ item.id }}" class="delete-link" onclick="return confirm('Are you sure?');">Delete</a></td>
                 </tr>

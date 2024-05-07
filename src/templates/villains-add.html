@@ -36,6 +36,54 @@
                     <option value="{{ city.city_id }}">{{ city.city_name }}</option>
                 {% endfor %}
             </select>
+            <!-- This is just an example, the actual implementation would probably look pretty different once actual data is used -->
+            <label>Powers:</label>
+            <div id="power-select">
+                <div id="available-power-list">
+                    <h4>Available</h4>
+                    <input type="checkbox" id="power-1", name="power-1">
+                    <label for="power-1">Super strength</label>
+                    <input type="checkbox" id="power-2", name="power-2">
+                    <label for="power-2">Super speed</label>
+                    <input type="checkbox" id="power-3", name="power-3">
+                    <label for="power-3">Super hearing</label>
+                </div>
+                <div id="chosen-power-list">
+                    <h4>Selected</h4>
+                </div>
+            </div>
+            <script>
+                const inputs = [...document.getElementById('available-power-list').childNodes].filter(child => child.nodeName === 'INPUT')
+                const labels = [...document.getElementById('available-power-list').childNodes].filter(child => child.nodeName === 'LABEL')
+                const chosen_power_list = document.getElementById('chosen-power-list')
+
+                // make sure boxes are unchecked (they normally keep their checked state on reload)
+                for (input of inputs) input.checked = false
+
+                function updateChosenPower(input, label) {
+                    // add power to chosen list if checked, remove it if unchecked
+                    if (input.checked) {
+                        const added_power = document.createElement('p')
+
+                        added_power.setAttribute('id', `power-${label.textContent}`)
+                        added_power.textContent = label.textContent
+                        added_power.addEventListener('click', () => {
+                            added_power.remove()
+                            input.checked = false
+                        })
+
+                        chosen_power_list.appendChild(added_power)
+                    } else {
+                        const removed_power = document.getElementById(`power-${label.textContent}`)
+
+                        removed_power.remove()
+                    }
+                }
+
+                for (let [index, input] of inputs.entries()) {
+                    input.addEventListener('change', () => updateChosenPower(input, labels[index]))
+                }
+            </script>
             <div class="form-actions">
                 <input type="submit" class="submit-button" value="Submit">
                 <a href="/villains" class="cancel-button">Cancel</a>
