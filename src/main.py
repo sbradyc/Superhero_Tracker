@@ -35,7 +35,7 @@ try:
         # INNER JOIN Countries ON Countries.country_id = Cities.country_id;
         # """
         # cursor.execute(query)
-        data = []  # cursor.fetchall()
+        data = [{"id": 1, "city": "New York", "country": "United States of America"}]  # cursor.fetchall()
         return render_template("cities.html", data=data)
 
     @app.route("/countries")
@@ -53,7 +53,9 @@ try:
 
     @app.route("/heroes")
     def heroes():
-        return render_template("heroes.html")
+        data = [{"id": 1, "pseudonym": "Spider-man", "first_name": "Peter", "last_name": "Parker", "city": "New York", "powers": ["Super Strength", "Enhanced Agility"]}]
+        return render_template("heroes.html",
+                               data=data)
 
     @app.route("/missions")
     def missions():
@@ -71,12 +73,14 @@ try:
         # INNER JOIN Cities ON Cities.city_id = Missions.city_id;
         # """
         # cursor.execute(query)
-        data = []  # cursor.fetchall()
+        data = [{"id": 1, "mission_name": "Ink Pen", "hero_name": "Spider Man", "villain_name": "Doc Oc", "city": "New York", "description": "Doc Oc is stealing fuses from major power stations in New York"}]  # cursor.fetchall()
         return render_template("missions.html", data=data)
 
     @app.route("/powers")
     def powers():
-        return render_template("powers.html")
+        data = [{"id": 1, "name": "Super Strength", "description": "Self explanatory"}]
+        return render_template("powers.html",
+                               data=data)
 
     @app.route("/villains")
     def villains():
@@ -219,7 +223,9 @@ try:
 
     @app.route("/heroes-update/<id>", methods=['GET', 'POST'])
     def heroes_update(id: int):
-        return render_template("heroes-update.html")
+        data = {"id": 1, "pseudonym": "Spider-man", "first_name": "Peter", "last_name": "Parker", "city": "New York", "powers": ["Super Strength", "Enhanced Agility"]}
+        return render_template("heroes-update.html",
+                               hero=data)
 
     @app.route("/missions-update/<id>", methods=['GET', 'POST'])
     def missions_update(id: int):
@@ -228,8 +234,9 @@ try:
             heroes: list[dict] = []  # query_helper.get_heroes_data(cursor)
             villains: list[dict] = []  # query_helper.get_villains_data(cursor)
             cities: list[dict] = []  # query_helper.get_cities_data(cursor)
+            data = {"id": 1, "mission_codename": "Ink Pen", "hero_name": "Spider Man", "villain_name": "Doc Oc", "city": "New York", "description": "Doc Oc is stealing fuses from major power stations in New York"}
             return render_template("missions-update.html",
-                                   defaults=mission,
+                                   defaults=data,  # mission,
                                    heroes=heroes,
                                    villains=villains,
                                    cities=cities)
@@ -255,7 +262,8 @@ try:
 
     @app.route("/powers-update/<id>", methods=['GET', 'POST'])
     def powers_update(id: int):
-        return render_template("powers-update.html")
+        return render_template("powers-update.html",
+                               power={"name": "Super strength", "description": "Self explanatory"})
 
     @app.route("/villains-update/<id>", methods=['GET', 'POST'])
     def villains_update(id: int):

@@ -22,13 +22,13 @@
         </nav>
         <h2 class="form-header">Update a Hero</h2>
         <h3 class="error-message">{{ message }}</h3>
-        <form action="/heroes-update/{{hero.hero_id}}" method="post">
+        <form action="/heroes-update/{{ hero.hero_id }}" method="post">
             <label for="pseudonym">Pseudonym: </label>
-            <input type="text" id="pseudonym" name="pseudonym" value="{{hero.pseudonym}}" required><br>
+            <input type="text" id="pseudonym" name="pseudonym" value="{{ hero.pseudonym }}" required><br>
             <label for="first-name">First Name: </label>
-            <input type="text" id="first-name" name="first-name" value="{{hero.first_name}}" required><br>
+            <input type="text" id="first-name" name="first-name" value="{{ hero.first_name }}" required><br>
             <label for="last-name">Last Name: </label>
-            <input type="text" id="last-name" name="last-name" value="{{hero.last_name}}" required><br>
+            <input type="text" id="last-name" name="last-name" value="{{ hero.last_name }}" required><br>
             <label for="city_name">City: </label>
             <select id="city_name" name="city_id" required>
                 <option value="" disabled selected>Select a city</option>
