@@ -20,16 +20,16 @@
                 <li><a href="/powers">Powers</a></li>
             </ul>
         </nav>
-        <h2 class="form-header">Add a New Villain</h2>
+        <h2 class="form-header">Add a New {{ people_type_singular.capitalize() }}</h2>
         <h3 class="error-message">{{ message }}</h3>
-        <form action="/villains-add" method="post">
+        <form action="/{{ people_type_plural }}-add" method="post">
             <label for="pseudonym">Pseudonym: </label>
             <input type="text" id="pseudonym" name="pseudonym" required><br>
             <label for="first-name">First Name: </label>
             <input type="text" id="first-name" name="first-name" required><br>
             <label for="last-name">Last Name: </label>
             <input type="text" id="last-name" name="last-name" required><br>
-            <label for="city_name">Last Known Location: </label>
+            <label for="city_name">{{ city_type.capitalize() }}: </label>
             <select id="city_name" name="city_id" required>
                 <option value="" disabled selected>Select a city</option>
                 {% for city in cities %}
@@ -47,6 +47,7 @@
                     <label for="power-2">Super speed</label>
                     <input type="checkbox" id="power-3", name="power-3">
                     <label for="power-3">Super hearing</label>
+
                 </div>
                 <div id="chosen-power-list">
                     <h4>Selected</h4>
@@ -86,7 +87,7 @@
             </script>
             <div class="form-actions">
                 <input type="submit" class="submit-button" value="Submit">
-                <a href="/villains" class="cancel-button">Cancel</a>
+                <a href="/{{ people_type_plural }}" class="cancel-button">Cancel</a>
             </div>
         </form>
     </body>

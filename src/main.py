@@ -54,8 +54,13 @@ try:
     @app.route("/heroes")
     def heroes():
         data = [{"id": 1, "pseudonym": "Spider-man", "first_name": "Peter", "last_name": "Parker", "city": "New York", "powers": ["Super Strength", "Enhanced Agility"]}]
-        return render_template("heroes.html",
-                               data=data)
+        return render_template(
+            "people.html",
+            data=data,
+            people_type_singular="hero",
+            people_type_plural="heroes",
+            city_type="City"
+        )
 
     @app.route("/missions")
     def missions():
@@ -85,7 +90,13 @@ try:
     @app.route("/villains")
     def villains():
         data = [{"id": 1, "pseudonym": "Doctor Octopus", "first_name": "Otto", "last_name": "Octavius", "city": "New York", "powers": ["Cybernetic Tentacles"]}]
-        return render_template("villains.html", data=data)
+        return render_template(
+            "people.html",
+            data=data,
+            people_type_singular="villain",
+            people_type_plural="villains",
+            city_type="Last Known Location"
+        )
 
     @app.route("/cities-add", methods=['GET', 'POST'])
     def cities_add():
@@ -124,7 +135,12 @@ try:
 
     @app.route("/heroes-add", methods=['GET', 'POST'])
     def heroes_add():
-        return render_template("heroes-add.html")
+        return render_template(
+            "people-add.html",
+            people_type_singular="hero",
+            people_type_plural="heroes",
+            city_type="city"
+        )
 
     @app.route("/missions-add", methods=['GET', 'POST'])
     def missions_add():
@@ -165,7 +181,12 @@ try:
 
     @app.route("/villains-add", methods=['GET', 'POST'])
     def villains_add():
-        return render_template("villains-add.html")
+        return render_template(
+            "people-add.html",
+            people_type_singular="villain",
+            people_type_plural="villains",
+            city_type="last known location"
+        )
 
     @app.route("/cities-update/<id>", methods=['GET', 'POST'])
     def cities_update(id: int):
@@ -224,8 +245,13 @@ try:
     @app.route("/heroes-update/<id>", methods=['GET', 'POST'])
     def heroes_update(id: int):
         data = {"id": 1, "pseudonym": "Spider-man", "first_name": "Peter", "last_name": "Parker", "city": "New York", "powers": ["Super Strength", "Enhanced Agility"]}
-        return render_template("heroes-update.html",
-                               hero=data)
+        return render_template(
+            "people-update.html",
+            person=data,
+            people_type_singular="hero",
+            people_type_plural="heroes",
+            city_type="city"
+        )
 
     @app.route("/missions-update/<id>", methods=['GET', 'POST'])
     def missions_update(id: int):
@@ -268,7 +294,13 @@ try:
     @app.route("/villains-update/<id>", methods=['GET', 'POST'])
     def villains_update(id: int):
         data = {"id": 1, "pseudonym": "Doctor Octopus", "first_name": "Otto", "last_name": "Octavius", "city": "New York", "powers": ["Cybernetic Tentacles"]}
-        return render_template("villains-update.html", villain=data)
+        return render_template(
+            "people-update.html",
+            person=data,
+            people_type_singular="villain",
+            people_type_plural="villains",
+            city_type="last known location"
+        )
 
     """
     The following routes will do a delete query and then reload
