@@ -35,22 +35,22 @@ CREATE TABLE Cities (
 
 CREATE TABLE Heroes (
     hero_id INT NOT NULL AUTO_INCREMENT,
-    city_id INT NOT NULL,
+    city_id INT,
     pseudonym VARCHAR(50) NOT NULL,
     first_name VARCHAR(50) NULL,
     last_name VARCHAR(50) NULL,
     PRIMARY KEY (hero_id),
-    FOREIGN KEY (city_id) REFERENCES Cities(city_id)
+    FOREIGN KEY (city_id) REFERENCES Cities(city_id) ON DELETE SET NULL
 );
 
 CREATE TABLE Villains (
     villain_id INT NOT NULL AUTO_INCREMENT,
-    last_known_loc INT NOT NULL,
+    last_known_loc INT,
     pseudonym VARCHAR(50) NOT NULL,
     first_name VARCHAR(50) NULL,
     last_name VARCHAR(50) NULL,
     PRIMARY KEY (villain_id),
-    FOREIGN KEY (last_known_loc) REFERENCES Cities(city_id)
+    FOREIGN KEY (last_known_loc) REFERENCES Cities(city_id) ON DELETE SET NULL
 );
 
 CREATE TABLE Missions (
@@ -61,7 +61,7 @@ CREATE TABLE Missions (
     mission_codename VARCHAR(20) NOT NULL,
     description TEXT(1000) NOT NULL,
     PRIMARY KEY (mission_id),
-    FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id),
+    FOREIGN KEY (hero_id) REFERENCES Heroes(hero_id) ON DELETE SET NULL,
     FOREIGN KEY (villain_id) REFERENCES Villains(villain_id) ON DELETE CASCADE,
     FOREIGN KEY (city_id) REFERENCES Cities(city_id) ON DELETE CASCADE
     /* If the villain is deleted, delete the mission too since there is no more danger. */
