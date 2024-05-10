@@ -19,15 +19,15 @@ DROP TABLE IF EXISTS VillainPowers;
 /* The next queries create the tables. */
 CREATE TABLE Countries (
     country_id INT NOT NULL AUTO_INCREMENT,
-    country_name VARCHAR(50),
-    country_code VARCHAR(3),
+    country_name VARCHAR(50) NOT NULL,
+    country_code VARCHAR(3) NOT NULL,
     PRIMARY KEY (country_id)
 );
 
 CREATE TABLE Cities (
     city_id INT NOT NULL AUTO_INCREMENT,
     country_id INT NOT NULL,
-    city_name VARCHAR(50),
+    city_name VARCHAR(50) NOT NULL,
     PRIMARY KEY (city_id),
     FOREIGN KEY (country_id) REFERENCES Countries(country_id) ON DELETE CASCADE
     /* If the country is gone then the city is most likely gone with it */
@@ -55,8 +55,8 @@ CREATE TABLE Villains (
 
 CREATE TABLE Missions (
     mission_id INT NOT NULL AUTO_INCREMENT,
-    hero_id INT NOT NULL,
-    villain_id INT NOT NULL,
+    hero_id INT,
+    villain_id INT,
     city_id INT NOT NULL,
     mission_codename VARCHAR(20) NOT NULL,
     description TEXT(1000) NOT NULL,
@@ -69,8 +69,8 @@ CREATE TABLE Missions (
 
 CREATE TABLE Powers (
     power_id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(50) NULL,
-    description TEXT(1000) NULL,
+    name VARCHAR(50) NOT NULL,
+    description TEXT(1000) NOT NULL,
     PRIMARY KEY (power_id)
 );
 
