@@ -32,13 +32,12 @@
                 {% endfor %}
             </select>
             <label for="villain_name">Villain Name: </label>
-            <p style="margin-left: 48%;">{{defaults.villain_name}}</p> <!-- add class to center it later -->
-            <!-- <select id="villain_name" name="villain_id" required>
+            <select id="villain_name" name="villain_id" required>
                 <option value="" disabled>Select a villain</option>
                 {% for villain in villains %}
                     <option value="{{ villain.villain_id }}" {% if villain.villain_id == defaults.villain_id %}selected{% endif %}>{{ villain.pseudonym }}</option>
                 {% endfor %}
-            </select> -->
+            </select>
             <label for="city_name">City Name: </label>
             <select id="city_name" name="city_id" required>
                 <!-- <option value="" disabled>Select a city</option> -->
