@@ -17,9 +17,9 @@ INNER JOIN Countries ON Countries.country_id = Cities.country_id;
 
 /* SELECT for Heroes Table (Combining Heroes & HeroPowers) */
 SELECT
-    pseudonym AS Pseudonym,
-    first_name AS FName,
-    last_name AS LName,
+    pseudonym AS HeroPseudonym,
+    first_name AS FirstName,
+    last_name AS LastName,
     Cities.city_name AS City,
     GROUP_CONCAT(Powers.name SEPARATOR ', ') AS Powers
 FROM Heroes
@@ -30,9 +30,9 @@ GROUP BY Heroes.hero_id, Heroes.pseudonym, Heroes.first_name, Heroes.last_name, 
 
 /* SELECT for Villains Table (Combining Villains & VillainPowers) */
 SELECT
-    pseudonym AS Pseudonym,
-    first_name AS FName,
-    last_name AS LName,
+    pseudonym AS VillainPseudonym,
+    first_name AS FirstName,
+    last_name AS LastName,
     Cities.city_name AS Location,
     GROUP_CONCAT(Powers.name SEPARATOR ', ') AS Powers
 FROM Villains
@@ -78,11 +78,11 @@ VALUES (:power_name, :power_description);
 
 /* Add a Hero */
 INSERT INTO Heroes (pseudonym, first_name, last_name, city_id)
-VALUES (:pseudonym, :first_name, :last_name, :city_id_from_dropdown);
+VALUES (:hero_pseudonym, :first_name, :last_name, :city_id_from_dropdown);
 
 /* Add a Villain */
 INSERT INTO Villains (pseudonym, first_name, last_name, last_known_loc)
-VALUES (:pseudonym, :first_name, :last_name, :city_id_from_dropdown);
+VALUES (:villain_pseudonym, :first_name, :last_name, :city_id_from_dropdown);
 
 /* Add a Power to a Hero (do this for each selected power AFTER Hero entry has been created) */
 INSERT INTO HeroPowers (hero_id, power_id)
@@ -118,7 +118,7 @@ WHERE city_id = :city_id;
 UPDATE Heroes
 SET
     city_id = (SELECT city_id FROM Cities WHERE city_name = :city_name),
-    pseudonym = :pseudonym,
+    pseudonym = :hero_pseudonym,
     first_name = :first_name,
     last_name = :last_name
 WHERE hero_id = :hero_id;
@@ -131,7 +131,7 @@ WHERE hero_id = :hero_id;
 UPDATE Villains
 SET
     last_known_loc = (SELECT city_id FROM Cities WHERE city_name = :city_name),
-    pseudonym = :pseudonym,
+    pseudonym = :villain_pseudonym,
     first_name = :first_name,
     last_name = :last_name
 WHERE villain_id = :villain_id;
@@ -141,8 +141,8 @@ WHERE villain_id = :villain_id;
 */
 UPDATE Missions
 SET
-    hero_id = (SELECT hero_id FROM Heroes WHERE pseudonym = :pseudonym),
-    villain_id = (SELECT villain_id FROM Villains WHERE pseudonym = :pseudonym),
+    hero_id = (SELECT hero_id FROM Heroes WHERE pseudonym = :hero_pseudonym),
+    villain_id = (SELECT villain_id FROM Villains WHERE pseudonym = :villain_pseudonym),
     city_id = (SELECT city_id FROM Cities WHERE city_name = :city_name),
     mission_codename = :codename,
     description = :description
