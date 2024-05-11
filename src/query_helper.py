@@ -1,7 +1,7 @@
 import mysql.connector
 
 CURSOR_OBJ = mysql.connector.cursor_cext.CMySQLCursorDict
-NO_COUNTRY_NAME: str = "No country by that name"
+NO_CITY_NAME: str = "You must input a city name."
 
 
 def get_country_id(cursor: CURSOR_OBJ,

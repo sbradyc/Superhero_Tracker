@@ -78,7 +78,7 @@ VALUES (:power_name, :power_description);
 
 /* Add a Hero */
 INSERT INTO Heroes (pseudonym, first_name, last_name, city_id)
-VALUES (:pseudonym, :first_name, :last_name, :city_name_with_id_from_dropdown);
+VALUES (:pseudonym, :first_name, :last_name, :city_id_from_dropdown);
 
 /* Add a Villain */
 INSERT INTO Villains (pseudonym, first_name, last_name, last_known_loc)

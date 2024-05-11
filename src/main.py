@@ -101,15 +101,22 @@ try:
     @app.route("/cities-add", methods=['GET', 'POST'])
     def cities_add():
         if request.method == "GET":
-            return render_template("cities-add.html")
+            # query = f"""
+            # SELECT
+            #     country_id,
+            #     country_name
+            # FROM Countries
+            # """
+            # cursor.execute(query)
+            countries = [{"country_id": 1, "country_name": "United States of America"}]  # cursor.fetchall()
+            return render_template("cities-add.html",
+                                   countries=countries)
         else:
             # city_name: str = request.form.get("city_name")
-            # country_name: str = request.form.get("country_name")
-            # country_id: int = query_helper.get_country_id(cursor,
-            #                                               country_name)
-            # if country_id == -1:
+            # country_id: str = request.form.get("country_id")
+            # if not city_name:
             #     return render_template("cities-add.html",
-            #                            message=query_helper.NO_COUNTRY_NAME)
+            #                            message=query_helper.NO_CITY_NAME)
             # query: str = f"""
             # INSERT INTO Cities (city_name, country_id)
             # VALUES ({city_name}, {country_id});
@@ -190,26 +197,33 @@ try:
 
     @app.route("/cities-update/<id>", methods=['GET', 'POST'])
     def cities_update(id: int):
+        # defaults: dict = query_helper.get_city(cursor, id) UPDATE THIS QUERY TO GET country_name
+        # query = f"""
+        # SELECT
+        #     country_id,
+        #     country_name
+        # FROM Countries
+        # """
+        # cursor.execute(query)
+        # countries = cursor.fetchall()
         if request.method == "GET":
-            # defaults: dict = query_helper.get_city(cursor, id)
-            # country_id: int = defaults["country_id"]
-            # country_name: str = query_helper.get_country_name(cursor,
-            #                                                   country_id)
+            countries = [{"country_id": 1, "country_name": "United States of America"}]  # cursor.fetchall()
             return render_template("cities-update.html",
                                    defaults={"city_id": 1,
-                                             "city_name": "example"},
-                                   country_name="country_name")
+                                             "city_name": "example",
+                                             "country_name": "United States of America"},
+                                   countries=countries)
         else:
             # city_name: str = request.form.get("city_name")
-            # country_name: str = request.form.get("country_name")
-            # country_id: int = query_helper.get_country_id(cursor,
-            #                                               country_name)
+            # country_id: str = request.form.get("country_id")
+            # if not city_name:
+            #     return render_template("cities-add.html",
+            #                            message=query_helper.NO_CITY_NAME)
             # if country_id == -1:
             #     return render_template("cities-update.html",
             #                            message=query_helper.NO_COUNTRY_NAME,
-            #                            defaults={"city_id": id,
-            #                                      "city_name": city_name},
-            #                            country_name=country_name)
+            #                            defaults=defaults,
+            #                            countries=countries)
             # query: str = f"""
             # UPDATE Cities
             # SET
@@ -219,6 +233,7 @@ try:
             # """
             # cursor.execute(query)
             # conn.commit()
+            print(request.form.get("country_id"))
             return redirect(url_for("cities"))
 
     @app.route("/countries-update/<id>", methods=['GET', 'POST'])
