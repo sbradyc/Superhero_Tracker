@@ -7,16 +7,16 @@ import mysql.connector
 
 app = Flask(__name__)
 CONFIG = {
-    "host":     "mysql.engr.oregonstate.edu",
-    "user":     "username",
-    "password": "password",
-    "database": "cs340_username"
+    "host": "classmysql.engr.oregonstate.edu",
+    "user": "cs340_leekip",
+    "password": "0rurh0ekM8QL",
+    "database": "cs340_leekip"
 }
 
 try:
-    # conn = mysql.connector.connect(**CONFIG)
-    # cursor = conn.cursor(dictionary=True)
-    # print(Fore.GREEN + "[+] Successfully connected to database" + Fore.RESET)
+    conn = mysql.connector.connect(**CONFIG)
+    cursor = conn.cursor(dictionary=True)
+    print(Fore.GREEN + "[+] Successfully connected to database" + Fore.RESET)
 
     @app.route("/")
     def main():
@@ -53,7 +53,26 @@ try:
 
     @app.route("/heroes")
     def heroes():
-        data = [{"id": 1, "pseudonym": "Spider-man", "first_name": "Peter", "last_name": "Parker", "city": "New York", "powers": ["Super Strength", "Enhanced Agility"]}]
+        query: str = """
+        SELECT
+            Heroes.hero_id AS id,
+            Heroes.pseudonym,
+            Heroes.first_name,
+            Heroes.last_name,
+            Cities.city_name AS city,
+            GROUP_CONCAT(Powers.name SEPARATOR ', ') AS powers
+        FROM Heroes
+        INNER JOIN Cities ON Cities.city_id = Heroes.city_id
+        INNER JOIN HeroPowers ON HeroPowers.hero_id = Heroes.hero_id
+        INNER JOIN Powers ON Powers.power_id = HeroPowers.power_id
+        GROUP BY Heroes.hero_id, Heroes.pseudonym, Heroes.first_name, Heroes.last_name, Cities.city_name
+        ORDER BY Heroes.pseudonym;
+        """
+        cursor.execute(query)
+        data = cursor.fetchall()
+        for row in data:
+            row["powers"] = row["powers"].split(", ")
+
         return render_template(
             "people.html",
             data=data,
@@ -83,13 +102,39 @@ try:
 
     @app.route("/powers")
     def powers():
-        data = [{"id": 1, "name": "Super Strength", "description": "Self explanatory"}]
+        query: str = """
+        SELECT
+            power_id AS id,
+            name,
+            description
+        FROM Powers; 
+        """
+        cursor.execute(query)
+        data = cursor.fetchall()
         return render_template("powers.html",
                                data=data)
 
     @app.route("/villains")
     def villains():
-        data = [{"id": 1, "pseudonym": "Doctor Octopus", "first_name": "Otto", "last_name": "Octavius", "city": "New York", "powers": ["Cybernetic Tentacles"]}]
+        query: str = """
+        SELECT
+            Villains.villain_id AS id,
+            Villains.pseudonym,
+            Villains.first_name,
+            Villains.last_name,
+            Cities.city_name AS city,
+            GROUP_CONCAT(Powers.name SEPARATOR ', ') AS powers
+        FROM Villains
+        INNER JOIN Cities ON Cities.city_id = Villains.last_known_loc
+        INNER JOIN VillainPowers ON VillainPowers.villain_id = Villains.villain_id
+        INNER JOIN Powers ON Powers.power_id = VillainPowers.power_id
+        GROUP BY Villains.villain_id, Villains.pseudonym, Villains.first_name, Villains.last_name, Cities.city_name;
+        """
+        cursor.execute(query)
+        data = cursor.fetchall()
+        for row in data:
+            row["powers"] = row["powers"].split(", ")
+
         return render_template(
             "people.html",
             data=data,
@@ -142,12 +187,82 @@ try:
 
     @app.route("/heroes-add", methods=['GET', 'POST'])
     def heroes_add():
-        return render_template(
-            "people-add.html",
-            people_type_singular="hero",
-            people_type_plural="heroes",
-            city_type="city"
-        )
+        if request.method == "GET":
+            # get cities
+            query = """
+            SELECT
+                city_id,
+                city_name
+            FROM Cities
+            ORDER BY city_name ASC;
+            """
+            cursor.execute(query)
+            cities = cursor.fetchall()
+
+            # get powers
+            query = """
+            SELECT
+                power_id,
+                name
+            FROM Powers
+            ORDER BY name ASC;
+            """
+            cursor.execute(query)
+            powers = cursor.fetchall()
+
+            return render_template(
+                "people-add.html",
+                people_type_singular="hero",
+                people_type_plural="heroes",
+                cities=cities,
+                city_type="city",
+                powers=powers
+            )
+        else:
+            # create Hero entry
+            pseudonym = request.form.get("pseudonym")
+            first_name = request.form.get("first_name")
+            last_name = request.form.get("last_name")
+            city_id = request.form.get("city_id")
+            query = f"""
+            INSERT INTO Heroes (
+                pseudonym,
+                first_name,
+                last_name,
+                city_id
+            )
+            VALUES (
+                "{pseudonym}",
+                "{first_name}",
+                "{last_name}",
+                {city_id}
+            );
+            """
+            cursor.execute(query)
+            conn.commit()
+
+            # create HeroPower entries
+            query = "SELECT LAST_INSERT_ID();"
+            cursor.execute(query)
+            hero_id = cursor.fetchall()[0]["LAST_INSERT_ID()"]
+            for name, _ in request.form.items():
+                prefix = name[:9]
+                if prefix == "power_id:":  # if power checkbox was selected
+                    power_id = name[9:] 
+                    query = f"""
+                    INSERT INTO HeroPowers (
+                        hero_id,
+                        power_id
+                    )
+                    VALUES (
+                        {hero_id},
+                        {power_id}
+                    );
+                    """
+                    cursor.execute(query)
+                    conn.commit()
+
+            return redirect(url_for("heroes"))
 
     @app.route("/missions-add", methods=['GET', 'POST'])
     def missions_add():
@@ -184,16 +299,102 @@ try:
 
     @app.route("/powers-add", methods=['GET', 'POST'])
     def powers_add():
-        return render_template("powers-add.html")
+        if request.method == "GET":
+            return render_template("powers-add.html")
+        else:
+            power_name = request.form.get("name")
+            power_description = request.form.get("description")
+            query = f"""
+            INSERT INTO Powers (
+                name,
+                description)
+            VALUES (
+                '{power_name}',
+                '{power_description}'
+            );
+            """
+            cursor.execute(query)
+            conn.commit()
+            return redirect(url_for("powers"))
 
     @app.route("/villains-add", methods=['GET', 'POST'])
     def villains_add():
-        return render_template(
-            "people-add.html",
-            people_type_singular="villain",
-            people_type_plural="villains",
-            city_type="last known location"
-        )
+        if request.method == "GET":
+            # get cities
+            query = """
+            SELECT
+                city_id,
+                city_name
+            FROM Cities
+            ORDER BY city_name ASC;
+            """
+            cursor.execute(query)
+            cities = cursor.fetchall()
+
+            # get powers
+            query = """
+            SELECT
+                power_id,
+                name
+            FROM Powers
+            ORDER BY name ASC;
+            """
+            cursor.execute(query)
+            powers = cursor.fetchall()
+
+            return render_template(
+                "people-add.html",
+                people_type_singular="villain",
+                people_type_plural="villains",
+                cities=cities,
+                city_type="last known location",
+                powers=powers
+            )
+        else:
+            # create Hero entry
+            pseudonym = request.form.get("pseudonym")
+            first_name = request.form.get("first_name")
+            last_name = request.form.get("last_name")
+            city_id = request.form.get("city_id")
+            query = f"""
+            INSERT INTO Villains (
+                pseudonym,
+                first_name,
+                last_name,
+                last_known_loc
+            )
+            VALUES (
+                "{pseudonym}",
+                "{first_name}",
+                "{last_name}",
+                {city_id}
+            );
+            """
+            cursor.execute(query)
+            conn.commit()
+
+            # create HeroPower entries
+            query = "SELECT LAST_INSERT_ID();"
+            cursor.execute(query)
+            villain_id = cursor.fetchall()[0]["LAST_INSERT_ID()"]
+            for name, _ in request.form.items():
+                prefix = name[:9]
+                if prefix == "power_id:":  # if power checkbox was selected
+                    power_id = name[9:] 
+                    query = f"""
+                    INSERT INTO VillainPowers (
+                        villain_id,
+                        power_id
+                    )
+                    VALUES (
+                        {villain_id},
+                        {power_id}
+                    );
+                    """
+                    cursor.execute(query)
+                    conn.commit()
+
+            return redirect(url_for("villains"))
 
     @app.route("/cities-update/<id>", methods=['GET', 'POST'])
     def cities_update(id: int):
@@ -303,8 +504,35 @@ try:
 
     @app.route("/powers-update/<id>", methods=['GET', 'POST'])
     def powers_update(id: int):
-        return render_template("powers-update.html",
-                               power={"name": "Super strength", "description": "Self explanatory"})
+        if request.method == "GET":
+            query = f"""
+            SELECT
+                name,
+                description
+            FROM Powers
+            WHERE power_id = {id};
+            """
+            cursor.execute(query)
+            power = cursor.fetchall()[0]
+
+            return render_template(
+                "powers-update.html",
+                power=power
+            )
+        else:
+            power_name = request.form.get("name")
+            power_description = request.form.get("description")
+            query = f"""
+            UPDATE Powers
+            SET
+                name = '{power_name}',
+                description = '{power_description}'
+            WHERE power_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
+
+            return redirect(url_for("powers"))
 
     @app.route("/villains-update/<id>", methods=['GET', 'POST'])
     def villains_update(id: int):
@@ -343,12 +571,13 @@ try:
 
     @app.route("/heroes-delete/<id>")
     def heroes_delete(id: int):
-        # query: str = f"""
-        # DELETE FROM Heroes
-        # WHERE hero_id = {id};
-        # """
-        # cursor.execute(query)
-        # conn.commit()
+        query: str = f"""
+        DELETE FROM Heroes
+        WHERE hero_id = {id};
+        """
+        cursor.execute(query)
+        conn.commit()
+
         return redirect(url_for("heroes"))
 
     @app.route("/missions-delete/<id>")
@@ -363,22 +592,23 @@ try:
 
     @app.route("/powers-delete/<id>")
     def powers_delete(id: int):
-        # query: str = f"""
-        # DELETE FROM Powers
-        # WHERE power_id = {id};
-        # """
-        # cursor.execute(query)
-        # conn.commit()
-        return render_template("powers.html")
+        query: str = f"""
+        DELETE FROM Powers
+        WHERE power_id = {id};
+        """
+        cursor.execute(query)
+        conn.commit()
+        return redirect(url_for("powers"))
 
     @app.route("/villains-delete/<id>")
     def villains_delete(id: int):
-        # query: str = f"""
-        # DELETE FROM Villains
-        # WHERE villain_id = {id};
-        # """
-        # cursor.execute(query)
-        # conn.commit()
+        query: str = f"""
+        DELETE FROM Villains
+        WHERE villain_id = {id};
+        """
+        cursor.execute(query)
+        conn.commit()
+
         return redirect(url_for("villains"))
 
 except (mysql.connector.Error,

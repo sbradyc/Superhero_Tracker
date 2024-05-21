@@ -26,9 +26,9 @@
             <label for="pseudonym">Pseudonym: </label>
             <input type="text" id="pseudonym" name="pseudonym" required><br>
             <label for="first-name">First Name: </label>
-            <input type="text" id="first-name" name="first-name" required><br>
+            <input type="text" id="first-name" name="first_name" required><br>
             <label for="last-name">Last Name: </label>
-            <input type="text" id="last-name" name="last-name" required><br>
+            <input type="text" id="last-name" name="last_name" required><br>
             <label for="city_name">{{ city_type.capitalize() }}: </label>
             <select id="city_name" name="city_id" required>
                 <option value="" disabled selected>Select a city</option>
@@ -39,19 +39,16 @@
             <!-- This is just an example, the actual implementation would probably look pretty different once actual data is used -->
             <label>Powers:</label>
             <div id="power-select">
-                <div id="available-power-list">
-                    <h4>Available</h4>
-                    <input type="checkbox" id="power-1", name="power-1">
-                    <label for="power-1">Super strength</label>
-                    <input type="checkbox" id="power-2", name="power-2">
-                    <label for="power-2">Super speed</label>
-                    <input type="checkbox" id="power-3", name="power-3">
-                    <label for="power-3">Super hearing</label>
-
-                </div>
-                <div id="chosen-power-list">
-                    <h4>Selected</h4>
-                </div>
+                <fieldset id="available-power-list">
+					<legend>Available</legend>
+					{% for power in powers %}
+					<input type="checkbox" name="power_id:{{ power.power_id }}" />
+					<label for="power_id:{{ power.power_id }}">{{ power.name }}</label>
+					{% endfor %}
+                </fieldset>
+                <fieldset id="chosen-power-list">
+					<legend>Selected</legend>
+                </fieldset>
             </div>
             <script>
                 const inputs = [...document.getElementById('available-power-list').childNodes].filter(child => child.nodeName === 'INPUT')
