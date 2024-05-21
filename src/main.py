@@ -7,10 +7,10 @@ import mysql.connector
 
 app = Flask(__name__)
 CONFIG = {
-    "host": "classmysql.engr.oregonstate.edu",
-    "user": "cs340_leekip",
-    "password": "0rurh0ekM8QL",
-    "database": "cs340_leekip"
+    "host":     "mysql.engr.oregonstate.edu",
+    "user":     "username",
+    "password": "password",
+    "database": "cs340_username"
 }
 
 try:
