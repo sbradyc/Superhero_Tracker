@@ -107,7 +107,7 @@ try:
             power_id AS id,
             name,
             description
-        FROM Powers; 
+        FROM Powers;
         """
         cursor.execute(query)
         data = cursor.fetchall()
@@ -248,7 +248,7 @@ try:
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
-                    power_id = name[9:] 
+                    power_id = name[9:]
                     query = f"""
                     INSERT INTO HeroPowers (
                         hero_id,
@@ -380,7 +380,7 @@ try:
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
-                    power_id = name[9:] 
+                    power_id = name[9:]
                     query = f"""
                     INSERT INTO VillainPowers (
                         villain_id,
@@ -546,7 +546,7 @@ try:
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
-                    power_id = name[9:] 
+                    power_id = name[9:]
                     query = f"""
                     INSERT INTO HeroPowers (
                         hero_id,
@@ -718,7 +718,7 @@ try:
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
-                    power_id = name[9:] 
+                    power_id = name[9:]
                     query = f"""
                     INSERT INTO VillainPowers (
                         villain_id,
@@ -740,22 +740,22 @@ try:
     """
     @app.route("/cities-delete/<id>")
     def cities_delete(id: int):
-        # query: str = f"""
-        # DELETE FROM Cities
-        # WHERE city_id = {id};
-        # """
-        # cursor.execute(query)
-        # conn.commit()
+        query: str = f"""
+        DELETE FROM Cities
+        WHERE city_id = {id};
+        """
+        cursor.execute(query)
+        conn.commit()
         return redirect(url_for("cities"))
 
     @app.route("/countries-delete/<id>")
     def countries_delete(id: int):
-        # query: str = f"""
-        # DELETE FROM Countries
-        # WHERE country_id = {id};
-        # """
-        # cursor.execute(query)
-        # conn.commit()
+        query: str = f"""
+        DELETE FROM Countries
+        WHERE country_id = {id};
+        """
+        cursor.execute(query)
+        conn.commit()
         return redirect(url_for("countries"))
 
     @app.route("/heroes-delete/<id>")
@@ -771,12 +771,12 @@ try:
 
     @app.route("/missions-delete/<id>")
     def missions_delete(id: int):
-        # query: str = f"""
-        # DELETE FROM Missions
-        # WHERE mission_id = {id};
-        # """
-        # cursor.execute(query)
-        # conn.commit()
+        query: str = f"""
+        DELETE FROM Missions
+        WHERE mission_id = {id};
+        """
+        cursor.execute(query)
+        conn.commit()
         return redirect(url_for("missions"))
 
     @app.route("/powers-delete/<id>")
