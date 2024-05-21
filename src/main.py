@@ -9,7 +9,7 @@ app = Flask(__name__)
 CONFIG = {
     "host": "classmysql.engr.oregonstate.edu",
     "user": "cs340_leekip",
-    "password": "0rurh0ekM8QL",
+    "password": "U7ohVrJ56nJq",
     "database": "cs340_leekip"
 }
 
@@ -351,11 +351,11 @@ try:
                 powers=powers
             )
         else:
-            # create Hero entry
+            # create Villain entry
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
             last_name = request.form.get("last_name")
-            city_id = request.form.get("city_id")
+            last_known_loc = request.form.get("city_id")
             query = f"""
             INSERT INTO Villains (
                 pseudonym,
@@ -367,13 +367,13 @@ try:
                 "{pseudonym}",
                 "{first_name}",
                 "{last_name}",
-                {city_id}
+                {last_known_loc}
             );
             """
             cursor.execute(query)
             conn.commit()
 
-            # create HeroPower entries
+            # create VillainPower entries
             query = "SELECT LAST_INSERT_ID();"
             cursor.execute(query)
             villain_id = cursor.fetchall()[0]["LAST_INSERT_ID()"]
@@ -460,14 +460,110 @@ try:
 
     @app.route("/heroes-update/<id>", methods=['GET', 'POST'])
     def heroes_update(id: int):
-        data = {"id": 1, "pseudonym": "Spider-man", "first_name": "Peter", "last_name": "Parker", "city": "New York", "powers": ["Super Strength", "Enhanced Agility"]}
-        return render_template(
-            "people-update.html",
-            person=data,
-            people_type_singular="hero",
-            people_type_plural="heroes",
-            city_type="city"
-        )
+        if request.method == "GET":
+            # get hero
+            query = f"""
+            SELECT
+                hero_id AS id,
+                pseudonym,
+                first_name,
+                last_name,
+                city_id
+            FROM Heroes
+            WHERE hero_id = {id};
+            """
+            cursor.execute(query)
+            hero = cursor.fetchall()[0]
+            if hero["first_name"] is None:  # TODO: this is a bandaid solution
+                hero["first_name"] = ""
+            if hero["last_name"] is None:  # TODO: this is a bandaid solution
+                hero["last_name"] = ""
+
+            # get IDs of hero's powers
+            query = f"""
+            SELECT power_id
+            FROM HeroPowers
+            WHERE hero_id = {id};
+            """
+            cursor.execute(query)
+            hero["power_ids"] = [item["power_id"] for item in cursor.fetchall()]
+
+            # get cities
+            query = """
+            SELECT
+                city_id,
+                city_name
+            FROM Cities
+            ORDER BY city_name ASC;
+            """
+            cursor.execute(query)
+            cities = cursor.fetchall()
+
+            # get all powers
+            query = """
+            SELECT
+                power_id,
+                name
+            FROM Powers
+            ORDER BY name ASC;
+            """
+            cursor.execute(query)
+            powers = cursor.fetchall()
+
+            return render_template(
+                "people-update.html",
+                person=hero,
+                person_type_singular="hero",
+                person_type_plural="heroes",
+                cities=cities,
+                city_type="city",
+                powers=powers
+            )
+        else:
+            # update Heroes table
+            pseudonym = request.form.get("pseudonym")
+            first_name = request.form.get("first_name")
+            last_name = request.form.get("last_name")
+            city_id = request.form.get("city_id")
+            query = f"""
+            UPDATE Heroes
+            SET
+                pseudonym = '{pseudonym}',
+                first_name = '{first_name}',
+                last_name = '{last_name}',
+                city_id = {city_id}
+            WHERE hero_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
+
+            # update HeroPowers table
+            # delete all HeroPowers for this hero
+            query = f"""
+            DELETE FROM HeroPowers
+            WHERE hero_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
+            # add or readd HeroPowers for this hero
+            for name, _ in request.form.items():
+                prefix = name[:9]
+                if prefix == "power_id:":  # if power checkbox was selected
+                    power_id = name[9:] 
+                    query = f"""
+                    INSERT INTO HeroPowers (
+                        hero_id,
+                        power_id
+                    )
+                    VALUES (
+                        {id},
+                        {power_id}
+                    );
+                    """
+                    cursor.execute(query)
+                    conn.commit()
+
+            return redirect(url_for("heroes"))
 
     @app.route("/missions-update/<id>", methods=['GET', 'POST'])
     def missions_update(id: int):
@@ -507,6 +603,7 @@ try:
         if request.method == "GET":
             query = f"""
             SELECT
+                power_id,
                 name,
                 description
             FROM Powers
@@ -536,14 +633,110 @@ try:
 
     @app.route("/villains-update/<id>", methods=['GET', 'POST'])
     def villains_update(id: int):
-        data = {"id": 1, "pseudonym": "Doctor Octopus", "first_name": "Otto", "last_name": "Octavius", "city": "New York", "powers": ["Cybernetic Tentacles"]}
-        return render_template(
-            "people-update.html",
-            person=data,
-            people_type_singular="villain",
-            people_type_plural="villains",
-            city_type="last known location"
-        )
+        if request.method == "GET":
+            # get villain
+            query = f"""
+            SELECT
+                villain_id AS id,
+                pseudonym,
+                first_name,
+                last_name,
+                last_known_loc AS city_id
+            FROM Villains
+            WHERE villain_id = {id};
+            """
+            cursor.execute(query)
+            villain = cursor.fetchall()[0]
+            if villain["first_name"] is None:  # TODO: this is a bandaid solution
+                villain["first_name"] = ""
+            if villain["last_name"] is None:  # TODO: this is a bandaid solution
+                villain["last_name"] = ""
+
+            # get IDs of hero's powers
+            query = f"""
+            SELECT power_id
+            FROM VillainPowers
+            WHERE villain_id = {id};
+            """
+            cursor.execute(query)
+            villain["power_ids"] = [item["power_id"] for item in cursor.fetchall()]
+
+            # get cities
+            query = """
+            SELECT
+                city_id,
+                city_name
+            FROM Cities
+            ORDER BY city_name ASC;
+            """
+            cursor.execute(query)
+            cities = cursor.fetchall()
+
+            # get all powers
+            query = """
+            SELECT
+                power_id,
+                name
+            FROM Powers
+            ORDER BY name ASC;
+            """
+            cursor.execute(query)
+            powers = cursor.fetchall()
+
+            return render_template(
+                "people-update.html",
+                person=villain,
+                person_type_singular="villain",
+                person_type_plural="villains",
+                cities=cities,
+                city_type="city",
+                powers=powers
+            )
+        else:
+            # update Villains table
+            pseudonym = request.form.get("pseudonym")
+            first_name = request.form.get("first_name")
+            last_name = request.form.get("last_name")
+            last_known_loc = request.form.get("city_id")
+            query = f"""
+            UPDATE Villains
+            SET
+                pseudonym = '{pseudonym}',
+                first_name = '{first_name}',
+                last_name = '{last_name}',
+                last_known_loc = {last_known_loc}
+            WHERE villain_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
+
+            # update VillainPowers table
+            # delete all VillainPowers for this villain
+            query = f"""
+            DELETE FROM VillainPowers
+            WHERE villain_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
+            # add or read VillainPowers for this villain
+            for name, _ in request.form.items():
+                prefix = name[:9]
+                if prefix == "power_id:":  # if power checkbox was selected
+                    power_id = name[9:] 
+                    query = f"""
+                    INSERT INTO VillainPowers (
+                        villain_id,
+                        power_id
+                    )
+                    VALUES (
+                        {id},
+                        {power_id}
+                    );
+                    """
+                    cursor.execute(query)
+                    conn.commit()
+
+            return redirect(url_for("villains"))
 
     """
     The following routes will do a delete query and then reload

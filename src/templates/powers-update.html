@@ -21,7 +21,7 @@
             </ul>
         </nav>
         <h2 class="form-header">Update a Power</h2>
-        <form action="/powers-add" method="post">
+        <form action="/powers-update/{{ power.power_id }}" method="post">
             <label for="name">Name: </label>
             <input type="text" id="name" name="name" value="{{power.name}}" required><br>
             <label for="description">Description: </label>
