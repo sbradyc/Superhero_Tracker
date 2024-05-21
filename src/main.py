@@ -3,7 +3,7 @@
 from colorama import Fore
 from flask import Flask, redirect, render_template, request, url_for
 import mysql.connector
-# import query_helper
+import query_helper
 
 app = Flask(__name__)
 CONFIG = {
@@ -26,29 +26,29 @@ try:
 
     @app.route("/cities")
     def cities():
-        # query: str = """
-        # SELECT
-        #     Cities.city_id AS id,
-        #     Cities.city_name AS city,
-        #     Countries.country_name AS country
-        # FROM Cities
-        # INNER JOIN Countries ON Countries.country_id = Cities.country_id;
-        # """
-        # cursor.execute(query)
-        data = [{"id": 1, "city": "New York", "country": "United States of America"}]  # cursor.fetchall()
+        query: str = """
+        SELECT
+            Cities.city_id AS id,
+            Cities.city_name AS city,
+            Countries.country_name AS country
+        FROM Cities
+        INNER JOIN Countries ON Countries.country_id = Cities.country_id;
+        """
+        cursor.execute(query)
+        data: list[dict] = cursor.fetchall()
         return render_template("cities.html", data=data)
 
     @app.route("/countries")
     def countries():
-        # query: str = """
-        # SELECT
-        #     Countries.country_id AS id,
-        #     Countries.country_name AS country,
-        #     Countries.country_code AS code
-        # FROM Countries;
-        # """
-        # cursor.execute(query)
-        data = [{"id": 1, "country": "United States of America", "code": "USA"}]  # cursor.fetchall()
+        query: str = """
+        SELECT
+            Countries.country_id AS id,
+            Countries.country_name AS country,
+            Countries.country_code AS code
+        FROM Countries;
+        """
+        cursor.execute(query)
+        data = cursor.fetchall()
         return render_template("countries.html", data=data)
 
     @app.route("/heroes")
@@ -83,21 +83,21 @@ try:
 
     @app.route("/missions")
     def missions():
-        # query: str = """
-        # SELECT
-        #     Missions.mission_id AS id,
-        #     Missions.mission_codename AS mission_name,
-        #     Heroes.pseudonym AS hero_name,
-        #     Villains.pseudonym AS villain_name,
-        #     Cities.city_name AS city,
-        #     Missions.description AS description
-        # FROM Missions
-        # INNER JOIN Heroes ON Heroes.hero_id = Missions.hero_id
-        # INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
-        # INNER JOIN Cities ON Cities.city_id = Missions.city_id;
-        # """
-        # cursor.execute(query)
-        data = [{"id": 1, "mission_name": "Ink Pen", "hero_name": "Spider Man", "villain_name": "Doc Oc", "city": "New York", "description": "Doc Oc is stealing fuses from major power stations in New York"}]  # cursor.fetchall()
+        query: str = """
+        SELECT
+            Missions.mission_id AS id,
+            Missions.mission_codename AS mission_name,
+            Heroes.pseudonym AS hero_name,
+            Villains.pseudonym AS villain_name,
+            Cities.city_name AS city,
+            Missions.description AS description
+        FROM Missions
+        INNER JOIN Heroes ON Heroes.hero_id = Missions.hero_id
+        INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
+        INNER JOIN Cities ON Cities.city_id = Missions.city_id;
+        """
+        cursor.execute(query)
+        data: list[dict] = cursor.fetchall()
         return render_template("missions.html", data=data)
 
     @app.route("/powers")
@@ -146,28 +146,28 @@ try:
     @app.route("/cities-add", methods=['GET', 'POST'])
     def cities_add():
         if request.method == "GET":
-            # query = f"""
-            # SELECT
-            #     country_id,
-            #     country_name
-            # FROM Countries
-            # """
-            # cursor.execute(query)
-            countries = [{"country_id": 1, "country_name": "United States of America"}]  # cursor.fetchall()
+            query = """
+            SELECT
+                country_id,
+                country_name
+            FROM Countries
+            """
+            cursor.execute(query)
+            countries = cursor.fetchall()
             return render_template("cities-add.html",
                                    countries=countries)
         else:
-            # city_name: str = request.form.get("city_name")
-            # country_id: str = request.form.get("country_id")
-            # if not city_name:
-            #     return render_template("cities-add.html",
-            #                            message=query_helper.NO_CITY_NAME)
-            # query: str = f"""
-            # INSERT INTO Cities (city_name, country_id)
-            # VALUES ({city_name}, {country_id});
-            # """
-            # cursor.execute(query)
-            # conn.commit()
+            city_name: str = request.form.get("city_name")
+            country_id: str = request.form.get("country_id")
+            if not city_name:
+                return render_template("cities-add.html",
+                                       message=query_helper.NO_CITY_NAME)
+            query: str = f"""
+            INSERT INTO Cities (city_name, country_id)
+            VALUES ({city_name}, {country_id});
+            """
+            cursor.execute(query)
+            conn.commit()
             return redirect(url_for("cities"))
 
     @app.route("/countries-add", methods=['GET', 'POST'])
@@ -175,14 +175,14 @@ try:
         if request.method == "GET":
             return render_template("countries-add.html")
         else:
-            # country_name: str = request.form.get("country_name")
-            # country_code: str = request.form.get("country_code")
-            # query: str = f"""
-            # INSERT INTO Countries (country_name, country_code)
-            # VALUES ({country_name}, {country_code});
-            # """
-            # cursor.execute(query)
-            # conn.commit()
+            country_name: str = request.form.get("country_name")
+            country_code: str = request.form.get("country_code")
+            query: str = f"""
+            INSERT INTO Countries (country_name, country_code)
+            VALUES ({country_name}, {country_code});
+            """
+            cursor.execute(query)
+            conn.commit()
             return redirect(url_for("countries"))
 
     @app.route("/heroes-add", methods=['GET', 'POST'])
@@ -267,34 +267,34 @@ try:
     @app.route("/missions-add", methods=['GET', 'POST'])
     def missions_add():
         if request.method == "GET":
-            heroes: list[dict] = []  # query_helper.get_heroes_data(cursor)
-            villains: list[dict] = []  # query_helper.get_villains_data(cursor)
-            cities: list[dict] = []  # query_helper.get_cities_data(cursor)
+            heroes: list[dict] = query_helper.get_heroes_data(cursor)
+            villains: list[dict] = query_helper.get_villains_data(cursor)
+            cities: list[dict] = query_helper.get_cities_data(cursor)
             return render_template("missions-add.html",
                                    heroes=heroes,
                                    villains=villains,
                                    cities=cities)
         else:
-            # mission_name: str = request.form.get("mission_name")
-            # hero_id: int = int(request.form.get("hero_id"))
-            # villain_id: int = int(request.form.get("villain_id"))
-            # city_id: int = int(request.form.get("city_id"))
-            # description: str = request.form.get("description")
-            # query: str = f"""
-            # INSERT INTO Missions (
-            #     mission_codename,
-            #     hero_id,
-            #     villain_id,
-            #     city_id,
-            #     description)
-            # VALUES ('{mission_name}',
-            #          {hero_id},
-            #          {villain_id},
-            #          {city_id},
-            #          '{description}');
-            # """
-            # cursor.execute(query)
-            # conn.commit()
+            mission_name: str = request.form.get("mission_name")
+            hero_id: int = int(request.form.get("hero_id"))
+            villain_id: int = int(request.form.get("villain_id"))
+            city_id: int = int(request.form.get("city_id"))
+            description: str = request.form.get("description")
+            query: str = f"""
+            INSERT INTO Missions (
+                mission_codename,
+                hero_id,
+                villain_id,
+                city_id,
+                description)
+            VALUES ('{mission_name}',
+                     {hero_id},
+                     {villain_id},
+                     {city_id},
+                     '{description}');
+            """
+            cursor.execute(query)
+            conn.commit()
             return redirect(url_for("missions"))
 
     @app.route("/powers-add", methods=['GET', 'POST'])
@@ -398,64 +398,61 @@ try:
 
     @app.route("/cities-update/<id>", methods=['GET', 'POST'])
     def cities_update(id: int):
-        # defaults: dict = query_helper.get_city(cursor, id) UPDATE THIS QUERY TO GET country_name
-        # query = f"""
-        # SELECT
-        #     country_id,
-        #     country_name
-        # FROM Countries
-        # """
-        # cursor.execute(query)
-        # countries = cursor.fetchall()
+        defaults: dict = query_helper.get_city(cursor, id) # UPDATE THIS QUERY TO GET country_name
+        query = """
+        SELECT
+            country_id,
+            country_name
+        FROM Countries
+        """
+        cursor.execute(query)
+        countries = cursor.fetchall()
         if request.method == "GET":
-            countries = [{"country_id": 1, "country_name": "United States of America"}]  # cursor.fetchall()
+            countries = cursor.fetchall()
             return render_template("cities-update.html",
-                                   defaults={"city_id": 1,
-                                             "city_name": "example",
-                                             "country_name": "United States of America"},
+                                   defaults=defaults,
                                    countries=countries)
         else:
-            # city_name: str = request.form.get("city_name")
-            # country_id: str = request.form.get("country_id")
-            # if not city_name:
-            #     return render_template("cities-add.html",
-            #                            message=query_helper.NO_CITY_NAME)
-            # if country_id == -1:
-            #     return render_template("cities-update.html",
-            #                            message=query_helper.NO_COUNTRY_NAME,
-            #                            defaults=defaults,
-            #                            countries=countries)
-            # query: str = f"""
-            # UPDATE Cities
-            # SET
-            #     city_name = '{city_name}',
-            #     country_id = {country_id}
-            # WHERE city_id = {id};
-            # """
-            # cursor.execute(query)
-            # conn.commit()
+            city_name: str = request.form.get("city_name")
+            country_id: str = request.form.get("country_id")
+            if not city_name:
+                return render_template("cities-add.html",
+                                       message=query_helper.NO_CITY_NAME)
+            if country_id == -1:
+                return render_template("cities-update.html",
+                                       message=query_helper.NO_COUNTRY_NAME,
+                                       defaults=defaults,
+                                       countries=countries)
+            query: str = f"""
+            UPDATE Cities
+            SET
+                city_name = '{city_name}',
+                country_id = {country_id}
+            WHERE city_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
             print(request.form.get("country_id"))
             return redirect(url_for("cities"))
 
     @app.route("/countries-update/<id>", methods=['GET', 'POST'])
     def countries_update(id: int):
         if request.method == "GET":
-            # country: dict = query_helper.get_country(cursor, id)
+            country: dict = query_helper.get_country(cursor, id)
             return render_template("countries-update.html",
-                                   country={"country_name": "example",
-                                            "country_code": "example"})
+                                   country=country)
         else:
-            # country_name: str = request.form.get("country_name")
-            # country_code: str = request.form.get("country_code")
-            # query: str = f"""
-            # UPDATE Countries
-            # SET
-            #     country_name = '{country_name}',
-            #     country_code = '{country_code}'
-            # WHERE country_id = {id};
-            # """
-            # cursor.execute(query)
-            # conn.commit()
+            country_name: str = request.form.get("country_name")
+            country_code: str = request.form.get("country_code")
+            query: str = f"""
+            UPDATE Countries
+            SET
+                country_name = '{country_name}',
+                country_code = '{country_code}'
+            WHERE country_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
             return redirect(url_for("countries"))
 
     @app.route("/heroes-update/<id>", methods=['GET', 'POST'])
@@ -568,34 +565,33 @@ try:
     @app.route("/missions-update/<id>", methods=['GET', 'POST'])
     def missions_update(id: int):
         if request.method == "GET":
-            mission = []  # query_helper.get_mission(cursor, id)
-            heroes: list[dict] = []  # query_helper.get_heroes_data(cursor)
-            villains: list[dict] = []  # query_helper.get_villains_data(cursor)
-            cities: list[dict] = []  # query_helper.get_cities_data(cursor)
-            data = {"id": 1, "mission_codename": "Ink Pen", "hero_name": "Spider Man", "villain_name": "Doc Oc", "city": "New York", "description": "Doc Oc is stealing fuses from major power stations in New York"}
+            mission = query_helper.get_mission(cursor, id)
+            heroes: list[dict] = query_helper.get_heroes_data(cursor)
+            villains: list[dict] = query_helper.get_villains_data(cursor)
+            cities: list[dict] = query_helper.get_cities_data(cursor)
             return render_template("missions-update.html",
-                                   defaults=data,  # mission,
+                                   defaults=mission,
                                    heroes=heroes,
                                    villains=villains,
                                    cities=cities)
         else:
-            # mission_name: str = request.form.get("mission_name")
-            # hero_id: int = int(request.form.get("hero_id"))
-            # villain_id: int = int(request.form.get("villain_id"))
-            # city_id: int = int(request.form.get("city_id"))
-            # description: str = request.form.get("description")
-            # query: str = f"""
-            # UPDATE Missions
-            # SET
-            #     hero_id = {hero_id},
-            #     villain_id = {villain_id},
-            #     city_id = {city_id},
-            #     mission_codename = '{mission_name}',
-            #     description = '{description}'
-            # WHERE mission_id = {id};
-            # """
-            # cursor.execute(query)
-            # conn.commit()
+            mission_name: str = request.form.get("mission_name")
+            hero_id: int = int(request.form.get("hero_id"))
+            villain_id: int = int(request.form.get("villain_id"))
+            city_id: int = int(request.form.get("city_id"))
+            description: str = request.form.get("description")
+            query: str = f"""
+            UPDATE Missions
+            SET
+                hero_id = {hero_id},
+                villain_id = {villain_id},
+                city_id = {city_id},
+                mission_codename = '{mission_name}',
+                description = '{description}'
+            WHERE mission_id = {id};
+            """
+            cursor.execute(query)
+            conn.commit()
             return redirect(url_for("missions"))
 
     @app.route("/powers-update/<id>", methods=['GET', 'POST'])
@@ -810,12 +806,12 @@ except (mysql.connector.Error,
     print(Fore.RED +
           f"[-] Error connecting to or using cursor with MySQL {e}" +
           Fore.RESET)
-    # if "cursor" in globals() and cursor is not None:
-    #     cursor.close()
-    #     print(Fore.YELLOW + "[~] MySQL cursor closed" + Fore.RESET)
-    # if "conn" in globals() and conn.is_connected():
-    #     conn.close()
-    #     print(Fore.YELLOW + "[~] MySQL connection closed" + Fore.RESET)
+    if "cursor" in globals() and cursor is not None:
+        cursor.close()
+        print(Fore.YELLOW + "[~] MySQL cursor closed" + Fore.RESET)
+    if "conn" in globals() and conn.is_connected():
+        conn.close()
+        print(Fore.YELLOW + "[~] MySQL connection closed" + Fore.RESET)
     print(Fore.YELLOW + "[~] Program Exiting..." + Fore.RESET)
     exit(1)
 
