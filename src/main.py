@@ -13,6 +13,7 @@ CONFIG = {
     "database": "cs340_username"
 }
 
+
 try:
     conn = mysql.connector.connect(**CONFIG)
     cursor = conn.cursor(dictionary=True)
@@ -65,7 +66,8 @@ try:
         INNER JOIN Cities ON Cities.city_id = Heroes.city_id
         INNER JOIN HeroPowers ON HeroPowers.hero_id = Heroes.hero_id
         INNER JOIN Powers ON Powers.power_id = HeroPowers.power_id
-        GROUP BY Heroes.hero_id, Heroes.pseudonym, Heroes.first_name, Heroes.last_name, Cities.city_name
+        GROUP BY Heroes.hero_id, Heroes.pseudonym, Heroes.first_name,
+            Heroes.last_name, Cities.city_name
         ORDER BY Heroes.pseudonym;
         """
         cursor.execute(query)
@@ -176,10 +178,12 @@ try:
             return render_template("countries-add.html")
         else:
             country_name: str = request.form.get("country_name")
+            print(country_name)
             country_code: str = request.form.get("country_code")
+            print(country_code)
             query: str = f"""
             INSERT INTO Countries (country_name, country_code)
-            VALUES ({country_name}, {country_code});
+            VALUES ('{country_name}', '{country_code}');
             """
             cursor.execute(query)
             conn.commit()
@@ -398,7 +402,7 @@ try:
 
     @app.route("/cities-update/<id>", methods=['GET', 'POST'])
     def cities_update(id: int):
-        defaults: dict = query_helper.get_city(cursor, id) # UPDATE THIS QUERY TO GET country_name
+        defaults: dict = query_helper.get_city(cursor, id)
         query = """
         SELECT
             country_id,
