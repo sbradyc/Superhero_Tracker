@@ -166,7 +166,7 @@ try:
                                        message=query_helper.NO_CITY_NAME)
             query: str = f"""
             INSERT INTO Cities (city_name, country_id)
-            VALUES ({city_name}, {country_id});
+            VALUES ('{city_name}', {country_id});
             """
             cursor.execute(query)
             conn.commit()
@@ -402,16 +402,15 @@ try:
 
     @app.route("/cities-update/<id>", methods=['GET', 'POST'])
     def cities_update(id: int):
-        defaults: dict = query_helper.get_city(cursor, id)
-        query = """
-        SELECT
-            country_id,
-            country_name
-        FROM Countries
-        """
-        cursor.execute(query)
-        countries = cursor.fetchall()
         if request.method == "GET":
+            defaults: dict = query_helper.get_city(cursor, id)
+            query = """
+            SELECT
+                country_id,
+                country_name
+            FROM Countries
+            """
+            cursor.execute(query)
             countries = cursor.fetchall()
             return render_template("cities-update.html",
                                    defaults=defaults,
