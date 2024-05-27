@@ -4,6 +4,7 @@ from colorama import Fore
 from flask import Flask, redirect, render_template, request, url_for
 import mysql.connector
 import query_helper
+import time
 
 app = Flask(__name__)
 CONFIG = {
@@ -12,13 +13,51 @@ CONFIG = {
     "password": "password",
     "database": "cs340_username"
 }
+conn = mysql.connector.connect(**CONFIG)
+cursor = conn.cursor(dictionary=True)
+
+
+def connect_to_db():
+    global conn
+    global cursor
+    conn = mysql.connector.connect(**CONFIG)
+    cursor = conn.cursor(dictionary=True)
+
+
+def query_fetch(query: str):
+    for _ in range(10):
+        try:
+            cursor.execute(query)
+            data = cursor.fetchall()
+            return data
+        except:
+            connect_to_db()
+
+        time.sleep(2)
+
+    # try one last time
+    cursor.execute(query)
+    data = cursor.fetchall()
+    return data
+
+
+def query_commit(query: str) -> None:
+    for _ in range(10):
+        try:
+            cursor.execute(query)
+            conn.commit()
+            return
+        except:
+            connect_to_db()
+
+        time.sleep(2)
+
+    # try one last time
+    cursor.execute(query)
+    conn.commit()
 
 
 try:
-    conn = mysql.connector.connect(**CONFIG)
-    cursor = conn.cursor(dictionary=True)
-    print(Fore.GREEN + "[+] Successfully connected to database" + Fore.RESET)
-
     @app.route("/")
     def main():
         message = "Welcome Shield Agent"
@@ -35,8 +74,7 @@ try:
         FROM Cities
         INNER JOIN Countries ON Countries.country_id = Cities.country_id;
         """
-        cursor.execute(query)
-        data: list[dict] = cursor.fetchall()
+        data = query_fetch(query)
         return render_template("cities.html", data=data)
 
     @app.route("/countries")
@@ -48,8 +86,7 @@ try:
             Countries.country_code AS code
         FROM Countries;
         """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        data = query_fetch(query)
         return render_template("countries.html", data=data)
 
     @app.route("/heroes")
@@ -70,8 +107,7 @@ try:
             Heroes.last_name, Cities.city_name
         ORDER BY Heroes.pseudonym;
         """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        data = query_fetch(query)
         for row in data:
             row["powers"] = row["powers"].split(", ")
 
@@ -98,8 +134,7 @@ try:
         INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
         INNER JOIN Cities ON Cities.city_id = Missions.city_id;
         """
-        cursor.execute(query)
-        data: list[dict] = cursor.fetchall()
+        data = query_fetch(query)
         return render_template("missions.html", data=data)
 
     @app.route("/powers")
@@ -111,8 +146,7 @@ try:
             description
         FROM Powers;
         """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        data = query_fetch(query)
         return render_template("powers.html",
                                data=data)
 
@@ -132,8 +166,7 @@ try:
         INNER JOIN Powers ON Powers.power_id = VillainPowers.power_id
         GROUP BY Villains.villain_id, Villains.pseudonym, Villains.first_name, Villains.last_name, Cities.city_name;
         """
-        cursor.execute(query)
-        data = cursor.fetchall()
+        data = query_fetch(query)
         for row in data:
             row["powers"] = row["powers"].split(", ")
 
@@ -154,8 +187,7 @@ try:
                 country_name
             FROM Countries
             """
-            cursor.execute(query)
-            countries = cursor.fetchall()
+            countries = query_fetch(query)
             return render_template("cities-add.html",
                                    countries=countries)
         else:
@@ -168,8 +200,7 @@ try:
             INSERT INTO Cities (city_name, country_id)
             VALUES ('{city_name}', {country_id});
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
             return redirect(url_for("cities"))
 
     @app.route("/countries-add", methods=['GET', 'POST'])
@@ -185,8 +216,7 @@ try:
             INSERT INTO Countries (country_name, country_code)
             VALUES ('{country_name}', '{country_code}');
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
             return redirect(url_for("countries"))
 
     @app.route("/heroes-add", methods=['GET', 'POST'])
@@ -200,8 +230,7 @@ try:
             FROM Cities
             ORDER BY city_name ASC;
             """
-            cursor.execute(query)
-            cities = cursor.fetchall()
+            cities = query_fetch(query)
 
             # get powers
             query = """
@@ -211,8 +240,7 @@ try:
             FROM Powers
             ORDER BY name ASC;
             """
-            cursor.execute(query)
-            powers = cursor.fetchall()
+            powers = query_fetch(query)
 
             return render_template(
                 "people-add.html",
@@ -242,13 +270,11 @@ try:
                 {city_id}
             );
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
 
             # create HeroPower entries
             query = "SELECT LAST_INSERT_ID();"
-            cursor.execute(query)
-            hero_id = cursor.fetchall()[0]["LAST_INSERT_ID()"]
+            hero_id = query_fetch(query)[0]["LAST_INSERT_ID()"]
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
@@ -263,8 +289,7 @@ try:
                         {power_id}
                     );
                     """
-                    cursor.execute(query)
-                    conn.commit()
+                    query_commit(query)
 
             return redirect(url_for("heroes"))
 
@@ -297,8 +322,7 @@ try:
                      {city_id},
                      '{description}');
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
             return redirect(url_for("missions"))
 
     @app.route("/powers-add", methods=['GET', 'POST'])
@@ -317,8 +341,7 @@ try:
                 '{power_description}'
             );
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
             return redirect(url_for("powers"))
 
     @app.route("/villains-add", methods=['GET', 'POST'])
@@ -332,8 +355,7 @@ try:
             FROM Cities
             ORDER BY city_name ASC;
             """
-            cursor.execute(query)
-            cities = cursor.fetchall()
+            cities = query_fetch(query)
 
             # get powers
             query = """
@@ -343,8 +365,7 @@ try:
             FROM Powers
             ORDER BY name ASC;
             """
-            cursor.execute(query)
-            powers = cursor.fetchall()
+            powers = query_fetch(query)
 
             return render_template(
                 "people-add.html",
@@ -374,13 +395,11 @@ try:
                 {last_known_loc}
             );
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
 
             # create VillainPower entries
             query = "SELECT LAST_INSERT_ID();"
-            cursor.execute(query)
-            villain_id = cursor.fetchall()[0]["LAST_INSERT_ID()"]
+            villain_id = query_fetch(query)[0]["LAST_INSERT_ID()"]
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
@@ -395,8 +414,7 @@ try:
                         {power_id}
                     );
                     """
-                    cursor.execute(query)
-                    conn.commit()
+                    query_commit(query)
 
             return redirect(url_for("villains"))
 
@@ -410,8 +428,7 @@ try:
                 country_name
             FROM Countries
             """
-            cursor.execute(query)
-            countries = cursor.fetchall()
+            countries = query_fetch(query)
             return render_template("cities-update.html",
                                    defaults=defaults,
                                    countries=countries)
@@ -433,9 +450,7 @@ try:
                 country_id = {country_id}
             WHERE city_id = {id};
             """
-            cursor.execute(query)
-            conn.commit()
-            print(request.form.get("country_id"))
+            query_commit(query)
             return redirect(url_for("cities"))
 
     @app.route("/countries-update/<id>", methods=['GET', 'POST'])
@@ -454,8 +469,7 @@ try:
                 country_code = '{country_code}'
             WHERE country_id = {id};
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
             return redirect(url_for("countries"))
 
     @app.route("/heroes-update/<id>", methods=['GET', 'POST'])
@@ -472,8 +486,7 @@ try:
             FROM Heroes
             WHERE hero_id = {id};
             """
-            cursor.execute(query)
-            hero = cursor.fetchall()[0]
+            hero = query_fetch(query)[0]
             if hero["first_name"] is None:  # TODO: this is a bandaid solution
                 hero["first_name"] = ""
             if hero["last_name"] is None:  # TODO: this is a bandaid solution
@@ -485,8 +498,8 @@ try:
             FROM HeroPowers
             WHERE hero_id = {id};
             """
-            cursor.execute(query)
-            hero["power_ids"] = [item["power_id"] for item in cursor.fetchall()]
+            hero_powers = query_fetch(query)
+            hero["power_ids"] = [item["power_id"] for item in hero_powers]
 
             # get cities
             query = """
@@ -496,8 +509,7 @@ try:
             FROM Cities
             ORDER BY city_name ASC;
             """
-            cursor.execute(query)
-            cities = cursor.fetchall()
+            cities = query_fetch(query)
 
             # get all powers
             query = """
@@ -507,8 +519,7 @@ try:
             FROM Powers
             ORDER BY name ASC;
             """
-            cursor.execute(query)
-            powers = cursor.fetchall()
+            powers = query_fetch(query)
 
             return render_template(
                 "people-update.html",
@@ -534,8 +545,7 @@ try:
                 city_id = {city_id}
             WHERE hero_id = {id};
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
 
             # update HeroPowers table
             # delete all HeroPowers for this hero
@@ -543,8 +553,7 @@ try:
             DELETE FROM HeroPowers
             WHERE hero_id = {id};
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
             # add or readd HeroPowers for this hero
             for name, _ in request.form.items():
                 prefix = name[:9]
@@ -560,8 +569,7 @@ try:
                         {power_id}
                     );
                     """
-                    cursor.execute(query)
-                    conn.commit()
+                    query_commit(query)
 
             return redirect(url_for("heroes"))
 
@@ -593,8 +601,7 @@ try:
                 description = '{description}'
             WHERE mission_id = {id};
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
             return redirect(url_for("missions"))
 
     @app.route("/powers-update/<id>", methods=['GET', 'POST'])
@@ -608,8 +615,7 @@ try:
             FROM Powers
             WHERE power_id = {id};
             """
-            cursor.execute(query)
-            power = cursor.fetchall()[0]
+            power = query_fetch(query)[0]
 
             return render_template(
                 "powers-update.html",
@@ -625,8 +631,7 @@ try:
                 description = '{power_description}'
             WHERE power_id = {id};
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
 
             return redirect(url_for("powers"))
 
@@ -644,8 +649,7 @@ try:
             FROM Villains
             WHERE villain_id = {id};
             """
-            cursor.execute(query)
-            villain = cursor.fetchall()[0]
+            villain = query_fetch(query)[0]
             if villain["first_name"] is None:  # TODO: this is a bandaid solution
                 villain["first_name"] = ""
             if villain["last_name"] is None:  # TODO: this is a bandaid solution
@@ -657,8 +661,8 @@ try:
             FROM VillainPowers
             WHERE villain_id = {id};
             """
-            cursor.execute(query)
-            villain["power_ids"] = [item["power_id"] for item in cursor.fetchall()]
+            villain_powers = query_fetch(query)
+            villain["power_ids"] = [item["power_id"] for item in villain_powers]
 
             # get cities
             query = """
@@ -668,8 +672,7 @@ try:
             FROM Cities
             ORDER BY city_name ASC;
             """
-            cursor.execute(query)
-            cities = cursor.fetchall()
+            cities = query_fetch(query)
 
             # get all powers
             query = """
@@ -679,8 +682,7 @@ try:
             FROM Powers
             ORDER BY name ASC;
             """
-            cursor.execute(query)
-            powers = cursor.fetchall()
+            powers = query_fetch(query)
 
             return render_template(
                 "people-update.html",
@@ -706,8 +708,7 @@ try:
                 last_known_loc = {last_known_loc}
             WHERE villain_id = {id};
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
 
             # update VillainPowers table
             # delete all VillainPowers for this villain
@@ -715,8 +716,7 @@ try:
             DELETE FROM VillainPowers
             WHERE villain_id = {id};
             """
-            cursor.execute(query)
-            conn.commit()
+            query_commit(query)
             # add or read VillainPowers for this villain
             for name, _ in request.form.items():
                 prefix = name[:9]
@@ -732,8 +732,7 @@ try:
                         {power_id}
                     );
                     """
-                    cursor.execute(query)
-                    conn.commit()
+                    query_commit(query)
 
             return redirect(url_for("villains"))
 
@@ -747,8 +746,7 @@ try:
         DELETE FROM Cities
         WHERE city_id = {id};
         """
-        cursor.execute(query)
-        conn.commit()
+        query_commit(query)
         return redirect(url_for("cities"))
 
     @app.route("/countries-delete/<id>")
@@ -757,8 +755,7 @@ try:
         DELETE FROM Countries
         WHERE country_id = {id};
         """
-        cursor.execute(query)
-        conn.commit()
+        query_commit(query)
         return redirect(url_for("countries"))
 
     @app.route("/heroes-delete/<id>")
@@ -767,9 +764,7 @@ try:
         DELETE FROM Heroes
         WHERE hero_id = {id};
         """
-        cursor.execute(query)
-        conn.commit()
-
+        query_commit(query)
         return redirect(url_for("heroes"))
 
     @app.route("/missions-delete/<id>")
@@ -778,8 +773,7 @@ try:
         DELETE FROM Missions
         WHERE mission_id = {id};
         """
-        cursor.execute(query)
-        conn.commit()
+        query_commit(query)
         return redirect(url_for("missions"))
 
     @app.route("/powers-delete/<id>")
@@ -788,8 +782,7 @@ try:
         DELETE FROM Powers
         WHERE power_id = {id};
         """
-        cursor.execute(query)
-        conn.commit()
+        query_commit(query)
         return redirect(url_for("powers"))
 
     @app.route("/villains-delete/<id>")
@@ -798,8 +791,7 @@ try:
         DELETE FROM Villains
         WHERE villain_id = {id};
         """
-        cursor.execute(query)
-        conn.commit()
+        query_commit(query)
 
         return redirect(url_for("villains"))
 
