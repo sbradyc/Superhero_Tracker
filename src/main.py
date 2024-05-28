@@ -9,7 +9,7 @@ import time
 app = Flask(__name__)
 CONFIG = {
     "host":     "classmysql.engr.oregonstate.edu",
-    "user":     "username",
+    "user":     "cs340_username",
     "password": "password",
     "database": "cs340_username"
 }
@@ -20,8 +20,16 @@ cursor = conn.cursor(dictionary=True)
 def connect_to_db():
     global conn
     global cursor
-    conn = mysql.connector.connect(**CONFIG)
-    cursor = conn.cursor(dictionary=True)
+    for _ in range(10):
+        try:
+            conn = mysql.connector.connect(**CONFIG)
+            cursor = conn.cursor(dictionary=True)
+            print("Connected to database")
+            return
+        except:
+            print("Failed to connect to database. Trying again")
+
+    time.sleep(2)
 
 
 def query_fetch(query: str):
@@ -29,15 +37,18 @@ def query_fetch(query: str):
         try:
             cursor.execute(query)
             data = cursor.fetchall()
+            print("Fetched data")
             return data
         except:
             connect_to_db()
+            print("Failed to fetch data, trying again")
 
         time.sleep(2)
 
     # try one last time
     cursor.execute(query)
     data = cursor.fetchall()
+    print("Failed to fetch data")
     return data
 
 
@@ -46,15 +57,18 @@ def query_commit(query: str) -> None:
         try:
             cursor.execute(query)
             conn.commit()
+            print("Committed changes")
             return
         except:
             connect_to_db()
+            print("Failed to commit changes, trying again")
 
         time.sleep(2)
 
     # try one last time
     cursor.execute(query)
     conn.commit()
+    print("Failed to commit changes")
 
 
 try:
