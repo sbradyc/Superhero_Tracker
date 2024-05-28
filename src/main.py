@@ -9,9 +9,9 @@ import time
 app = Flask(__name__)
 CONFIG = {
     "host":     "classmysql.engr.oregonstate.edu",
-    "user":     "cs340_leekip",
-    "password": "981bHZzT4e6n",
-    "database": "cs340_leekip"
+    "user":     "username",
+    "password": "password",
+    "database": "username"
 }
 conn = mysql.connector.connect(**CONFIG)
 cursor = conn.cursor(dictionary=True)
