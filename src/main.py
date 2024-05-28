@@ -9,9 +9,9 @@ import time
 app = Flask(__name__)
 CONFIG = {
     "host":     "classmysql.engr.oregonstate.edu",
-    "user":     "cs340_username",
-    "password": "password",
-    "database": "cs340_username"
+    "user":     "cs340_leekip",
+    "password": "981bHZzT4e6n",
+    "database": "cs340_leekip"
 }
 conn = mysql.connector.connect(**CONFIG)
 cursor = conn.cursor(dictionary=True)
@@ -144,9 +144,10 @@ try:
             Cities.city_name AS city,
             Missions.description AS description
         FROM Missions
-        INNER JOIN Heroes ON Heroes.hero_id = Missions.hero_id
-        INNER JOIN Villains ON Villains.villain_id = Missions.villain_id
-        INNER JOIN Cities ON Cities.city_id = Missions.city_id;
+        LEFT JOIN Heroes ON Heroes.hero_id = Missions.hero_id
+        LEFT JOIN Villains ON Villains.villain_id = Missions.villain_id
+        INNER JOIN Cities ON Cities.city_id = Missions.city_id
+        ORDER BY Missions.mission_codename;
         """
         data = query_fetch(query)
         return render_template("missions.html", data=data)
@@ -319,8 +320,8 @@ try:
                                    cities=cities)
         else:
             mission_name: str = request.form.get("mission_name")
-            hero_id: int = int(request.form.get("hero_id"))
-            villain_id: int = int(request.form.get("villain_id"))
+            hero_id: str = request.form.get("hero_id")
+            villain_id: str = request.form.get("villain_id")
             city_id: int = int(request.form.get("city_id"))
             description: str = request.form.get("description")
             query: str = f"""
@@ -334,7 +335,7 @@ try:
                      {hero_id},
                      {villain_id},
                      {city_id},
-                     '{description}');
+                    '{description}');
             """
             query_commit(query)
             return redirect(url_for("missions"))
@@ -601,8 +602,8 @@ try:
                                    cities=cities)
         else:
             mission_name: str = request.form.get("mission_name")
-            hero_id: int = int(request.form.get("hero_id"))
-            villain_id: int = int(request.form.get("villain_id"))
+            hero_id: str = request.form.get("hero_id")
+            villain_id: str = request.form.get("villain_id")
             city_id: int = int(request.form.get("city_id"))
             description: str = request.form.get("description")
             query: str = f"""

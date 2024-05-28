@@ -25,15 +25,15 @@
             <label for="mission_name">Mission Codename: </label>
             <input type="text" id="mission_name" name="mission_name" required><br>
             <label for="hero_name">Hero Name: </label>
-            <select id="hero_name" name="hero_id">
-                <option value="" disabled selected>Select a hero</option>
+            <select id="hero_name" name="hero_id" required>
+                <option value="NULL" selected>Select a hero (or choose this to leave blank)</option>
                 {% for hero in heroes %}
                     <option value="{{ hero.hero_id }}">{{ hero.pseudonym }}</option>
                 {% endfor %}
             </select>
             <label for="villain_name">Villain Name: </label>
             <select id="villain_name" name="villain_id" required>
-                <option value="" disabled selected>Select a villain</option>
+                <option value="NULL" selected>Select a villain (or choose this to leave blank)</option>
                 {% for villain in villains %}
                     <option value="{{ villain.villain_id }}">{{ villain.pseudonym }}</option>
                 {% endfor %}
