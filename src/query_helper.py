@@ -9,10 +9,10 @@ def get_country_id(cursor: CURSOR_OBJ,
     query: str = """
     SELECT country_id
     FROM Countries
-    WHERE country_name = '%s';
+    WHERE country_name = %s;
     """
     try:
-        cursor.execute(query, (country_name))
+        cursor.execute(query, (country_name,))
     except mysql.connector.errors.ProgrammingError:
         return -1
     country_entry: dict[str, int] = cursor.fetchall()[0]
@@ -68,7 +68,7 @@ def get_country_name(cursor: CURSOR_OBJ, country_id: int):
     WHERE country_id = %s;
     """
     try:
-        cursor.execute(query, (country_id))
+        cursor.execute(query, (country_id,))
     except mysql.connector.errors.ProgrammingError:
         return -1
     entry = cursor.fetchall()[0]
@@ -88,7 +88,7 @@ def get_mission(cursor: CURSOR_OBJ, id: int) -> str:
     WHERE mission_id = %s;
     """
     try:
-        cursor.execute(query, (id))
+        cursor.execute(query, (id,))
     except mysql.connector.errors.ProgrammingError:
         return -1
     return cursor.fetchall()[0]
@@ -104,7 +104,7 @@ def get_city(cursor: CURSOR_OBJ, id: int) -> str:
     WHERE city_id = %s;
     """
     try:
-        cursor.execute(query, (id))
+        cursor.execute(query, (id,))
     except mysql.connector.errors.ProgrammingError:
         return -1
     return cursor.fetchall()[0]
@@ -120,7 +120,7 @@ def get_country(cursor: CURSOR_OBJ, id: int):
     WHERE country_id = %s;
     """
     try:
-        cursor.execute(query, (id))
+        cursor.execute(query, (id,))
     except mysql.connector.errors.ProgrammingError:
         return -1
     return cursor.fetchall()[0]

@@ -26,21 +26,21 @@
             <input type="text" id="mission_name" name="mission_name" value="{{defaults.mission_codename}}"><br>
             <label for="hero_name">Hero Name: </label>
             <select id="hero_name" name="hero_id">
-                <option value="NULL">Select a hero (or choose this to leave blank)</option>
+                <option value="">Select a hero (or choose this to leave blank)</option>
                 {% for hero in heroes %}
                     <option value="{{ hero.hero_id }}" {% if hero.hero_id == defaults.hero_id %}selected{% endif %}>{{ hero.pseudonym }}</option>
                 {% endfor %}
             </select>
             <label for="villain_name">Villain Name: </label>
-            <select id="villain_name" name="villain_id" required>
-                <option value="NULL">Select a villain (or choose this to leave blank)</option>
+            <select id="villain_name" name="villain_id">
+                <option value="">Select a villain (or choose this to leave blank)</option>
                 {% for villain in villains %}
                     <option value="{{ villain.villain_id }}" {% if villain.villain_id == defaults.villain_id %}selected{% endif %}>{{ villain.pseudonym }}</option>
                 {% endfor %}
             </select>
             <label for="city_name">City Name: </label>
             <select id="city_name" name="city_id" required>
-                <option value="" disabled>Select a city</option>
+                <option disabled>Select a city</option>
                 {% for city in cities %}
                     <option value="{{ city.city_id }}" {% if city.city_id == defaults.city_id %}selected{% endif %}>{{ city.city_name }}</option>
                 {% endfor %}

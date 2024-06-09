@@ -31,8 +31,8 @@
             <label for="last-name">Last Name: </label>
             <input type="text" id="last-name" name="last_name"><br>
             <label for="city_name">{{ city_type.capitalize() }}: </label>
-            <select id="city_name" name="city_id" required>
-                <option value="NULL" selected>Select a city (or choose this to leave blank)</option>
+            <select id="city_name" name="city_id">
+                <option value="" selected>Select a city (or choose this to leave blank)</option>
                 {% for city in cities %}
                     <option value="{{ city.city_id }}">{{ city.city_name }}</option>
                 {% endfor %}

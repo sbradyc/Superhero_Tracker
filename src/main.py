@@ -269,12 +269,14 @@ try:
             # create Hero entry
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
-            if first_name.strip() == "":
-                first_name = "NULL"
+            if first_name == "":
+                first_name = None
             last_name = request.form.get("last_name")
-            if last_name.strip() == "":
-                last_name = "NULL"
+            if last_name == "":
+                last_name = None
             city_id = request.form.get("city_id")
+            if city_id == "":
+                city_id = None
             query = """
             INSERT INTO Heroes (
                 pseudonym,
@@ -319,10 +321,10 @@ try:
         else:
             mission_codename: str = request.form.get("mission_name")
             hero_id: str = request.form.get("hero_id")
-            if hero_id == "NULL":
+            if hero_id == "":
                 hero_id = None
             villain_id: str = request.form.get("villain_id")
-            if villain_id == "NULL":
+            if villain_id == "":
                 villain_id = None
             city_id: int = int(request.form.get("city_id"))
             description: str = request.form.get("description")
@@ -392,8 +394,14 @@ try:
             # create Villain entry
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
+            if first_name == "":
+                first_name = None
             last_name = request.form.get("last_name")
+            if last_name == "":
+                last_name = None
             last_known_loc = request.form.get("city_id")
+            if last_known_loc == "":
+                last_known_loc = None
             query = """
             INSERT INTO Villains (
                 pseudonym,
@@ -436,6 +444,7 @@ try:
             FROM Countries
             """
             countries = query_fetch(query)
+            print(defaults)
             return render_template("cities-update.html",
                                    defaults=defaults,
                                    countries=countries)
@@ -541,10 +550,18 @@ try:
             )
         else:
             # update Heroes table
+            # NULLABLE items have the value of an empty string,
+            #   and must be set to None for MySQL to recognize them as NULL
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
+            if first_name == "":
+                first_name = None
             last_name = request.form.get("last_name")
+            if last_name == "":
+                last_name = None
             city_id = request.form.get("city_id")
+            if city_id == "":
+                city_id = None
             query = """
             UPDATE Heroes
             SET
@@ -565,7 +582,7 @@ try:
             """
             params = (id,)
             query_commit(query, params)
-            # add or readd HeroPowers for this hero
+            # add or read HeroPowers for this hero
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
@@ -597,7 +614,11 @@ try:
         else:
             mission_codename: str = request.form.get("mission_name")
             hero_id: str = request.form.get("hero_id")
+            if hero_id == "":
+                hero_id = None
             villain_id: str = request.form.get("villain_id")
+            if villain_id == "":
+                villain_id = None
             city_id: int = int(request.form.get("city_id"))
             description: str = request.form.get("description")
             query: str = """
@@ -708,8 +729,14 @@ try:
             # update Villains table
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
+            if first_name == "":
+                first_name = None
             last_name = request.form.get("last_name")
+            if last_name == "":
+                last_name = None
             last_known_loc = request.form.get("city_id")
+            if last_known_loc == "":
+                last_known_loc = None
             query = """
             UPDATE Villains
             SET
