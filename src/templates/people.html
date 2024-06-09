@@ -38,9 +38,9 @@
                 {% for item in data %}
                 <tr>
                     <td>{{ item.pseudonym }}</td>
-                    <td>{{ item.first_name }}</td>
-                    <td>{{ item.last_name }}</td>
-                    <td>{{ item.city }}</td>
+                    <td>{{ "" if item.first_name == "NULL" else item.first_name }}</td>
+                    <td>{{ "" if item.last_name == "NULL" else item.last_name }}</td>
+                    <td>{{ item.city if item.city else "UNKNOWN" }}</td>
                     <td>
                         <ul>
                             {% for power in item.powers %}
