@@ -6,13 +6,13 @@ NO_CITY_NAME: str = "You must input a city name."
 
 def get_country_id(cursor: CURSOR_OBJ,
                    country_name: str) -> int:
-    query: str = f"""
+    query: str = """
     SELECT country_id
     FROM Countries
-    WHERE country_name = '{country_name}';
+    WHERE country_name = '%s';
     """
     try:
-        cursor.execute(query)
+        cursor.execute(query, (country_name))
     except mysql.connector.errors.ProgrammingError:
         return -1
     country_entry: dict[str, int] = cursor.fetchall()[0]
@@ -62,13 +62,13 @@ def get_villains_data(cursor: CURSOR_OBJ) -> list[dict]:
 
 
 def get_country_name(cursor: CURSOR_OBJ, country_id: int):
-    query = f"""
+    query = """
     SELECT country_name
     FROM Countries
-    WHERE country_id = {country_id};
+    WHERE country_id = %s;
     """
     try:
-        cursor.execute(query)
+        cursor.execute(query, (country_id))
     except mysql.connector.errors.ProgrammingError:
         return -1
     entry = cursor.fetchall()[0]
@@ -76,7 +76,7 @@ def get_country_name(cursor: CURSOR_OBJ, country_id: int):
 
 
 def get_mission(cursor: CURSOR_OBJ, id: int) -> str:
-    query: str = f"""
+    query: str = """
     SELECT
         mission_id,
         hero_id,
@@ -85,42 +85,42 @@ def get_mission(cursor: CURSOR_OBJ, id: int) -> str:
         mission_codename,
         description
     FROM Missions
-    WHERE mission_id = {id};
+    WHERE mission_id = %s;
     """
     try:
-        cursor.execute(query)
+        cursor.execute(query, (id))
     except mysql.connector.errors.ProgrammingError:
         return -1
     return cursor.fetchall()[0]
 
 
 def get_city(cursor: CURSOR_OBJ, id: int) -> str:
-    query: str = f"""
+    query: str = """
     SELECT
         city_id,
         country_id,
         city_name
     FROM Cities
-    WHERE city_id = {id};
+    WHERE city_id = %s;
     """
     try:
-        cursor.execute(query)
+        cursor.execute(query, (id))
     except mysql.connector.errors.ProgrammingError:
         return -1
     return cursor.fetchall()[0]
 
 
 def get_country(cursor: CURSOR_OBJ, id: int):
-    query: str = f"""
+    query: str = """
     SELECT
         country_id,
         country_name,
         country_code
     FROM Countries
-    WHERE country_id = {id};
+    WHERE country_id = %s;
     """
     try:
-        cursor.execute(query)
+        cursor.execute(query, (id))
     except mysql.connector.errors.ProgrammingError:
         return -1
     return cursor.fetchall()[0]
