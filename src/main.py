@@ -114,7 +114,7 @@ try:
             Cities.city_name AS city,
             GROUP_CONCAT(Powers.name SEPARATOR ', ') AS powers
         FROM Heroes
-        INNER JOIN Cities ON Cities.city_id = Heroes.city_id
+        LEFT JOIN Cities ON Cities.city_id = Heroes.city_id
         INNER JOIN HeroPowers ON HeroPowers.hero_id = Heroes.hero_id
         INNER JOIN Powers ON Powers.power_id = HeroPowers.power_id
         GROUP BY Heroes.hero_id, Heroes.pseudonym, Heroes.first_name,
@@ -176,7 +176,7 @@ try:
             Cities.city_name AS city,
             GROUP_CONCAT(Powers.name SEPARATOR ', ') AS powers
         FROM Villains
-        INNER JOIN Cities ON Cities.city_id = Villains.last_known_loc
+        LEFT JOIN Cities ON Cities.city_id = Villains.last_known_loc
         INNER JOIN VillainPowers ON VillainPowers.villain_id = Villains.villain_id
         INNER JOIN Powers ON Powers.power_id = VillainPowers.power_id
         GROUP BY Villains.villain_id, Villains.pseudonym, Villains.first_name, Villains.last_name, Cities.city_name;
