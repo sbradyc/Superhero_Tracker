@@ -200,6 +200,11 @@ th {
     width: 100%;
 }
 
+.welcome {
+    background-color: #00000075;
+    padding: 1rem 0;
+}
+
 .welcome, .table-header {
     text-align: center;
     font-size: larger;
