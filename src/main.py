@@ -20,7 +20,7 @@ cursor = conn.cursor(dictionary=True)
 def connect_to_db():
     global conn
     global cursor
-    for _ in range(10):
+    for _ in range(5):
         try:
             conn = mysql.connector.connect(**CONFIG)
             cursor = conn.cursor(dictionary=True)
@@ -29,11 +29,11 @@ def connect_to_db():
         except:
             print("Failed to connect to database. Trying again")
 
-    time.sleep(2)
+    time.sleep(1)
 
 
 def query_fetch(query: str):
-    for _ in range(10):
+    for _ in range(5):
         try:
             cursor.execute(query)
             data = cursor.fetchall()
@@ -43,7 +43,7 @@ def query_fetch(query: str):
             connect_to_db()
             print("Failed to fetch data, trying again")
 
-        time.sleep(2)
+        time.sleep(1)
 
     # try one last time
     cursor.execute(query)
@@ -52,10 +52,10 @@ def query_fetch(query: str):
     return data
 
 
-def query_commit(query: str) -> None:
-    for _ in range(10):
+def query_commit(query: str, params=()) -> None:
+    for _ in range(5):
         try:
-            cursor.execute(query)
+            cursor.execute(query, params)
             conn.commit()
             print("Committed changes")
             return
@@ -66,7 +66,7 @@ def query_commit(query: str) -> None:
         time.sleep(2)
 
     # try one last time
-    cursor.execute(query)
+    cursor.execute(query, params)
     conn.commit()
     print("Failed to commit changes")
 
@@ -211,11 +211,12 @@ try:
             if not city_name:
                 return render_template("cities-add.html",
                                        message=query_helper.NO_CITY_NAME)
-            query: str = f"""
+            query: str = """
             INSERT INTO Cities (city_name, country_id)
-            VALUES ('{city_name}', {country_id});
+            VALUES (%s, %s);
             """
-            query_commit(query)
+            params = (city_name, country_id)
+            query_commit(query, params)
             return redirect(url_for("cities"))
 
     @app.route("/countries-add", methods=['GET', 'POST'])
@@ -224,14 +225,13 @@ try:
             return render_template("countries-add.html")
         else:
             country_name: str = request.form.get("country_name")
-            print(country_name)
             country_code: str = request.form.get("country_code")
-            print(country_code)
-            query: str = f"""
+            query: str = """
             INSERT INTO Countries (country_name, country_code)
-            VALUES ('{country_name}', '{country_code}');
+            VALUES (%s, %s);
             """
-            query_commit(query)
+            params = (country_name, country_code)
+            query_commit(query, params)
             return redirect(url_for("countries"))
 
     @app.route("/heroes-add", methods=['GET', 'POST'])
@@ -275,21 +275,17 @@ try:
             if last_name.strip() == "":
                 last_name = "NULL"
             city_id = request.form.get("city_id")
-            query = f"""
+            query = """
             INSERT INTO Heroes (
                 pseudonym,
                 first_name,
                 last_name,
                 city_id
             )
-            VALUES (
-                "{pseudonym}",
-                "{first_name}",
-                "{last_name}",
-                {city_id}
-            );
+            VALUES (%s, %s, %s, %s);
             """
-            query_commit(query)
+            params = (pseudonym, first_name, last_name, city_id)
+            query_commit(query, params)
 
             # create HeroPower entries
             query = "SELECT LAST_INSERT_ID();"
@@ -298,17 +294,15 @@ try:
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
                     power_id = name[9:]
-                    query = f"""
+                    query = """
                     INSERT INTO HeroPowers (
                         hero_id,
                         power_id
                     )
-                    VALUES (
-                        {hero_id},
-                        {power_id}
-                    );
+                    VALUES (%s, %s);
                     """
-                    query_commit(query)
+                    params = (hero_id, power_id)
+                    query_commit(query, params)
 
             return redirect(url_for("heroes"))
 
@@ -323,25 +317,27 @@ try:
                                    villains=villains,
                                    cities=cities)
         else:
-            mission_name: str = request.form.get("mission_name")
+            mission_codename: str = request.form.get("mission_name")
             hero_id: str = request.form.get("hero_id")
+            if hero_id == "NULL":
+                hero_id = None
             villain_id: str = request.form.get("villain_id")
+            if villain_id == "NULL":
+                villain_id = None
             city_id: int = int(request.form.get("city_id"))
             description: str = request.form.get("description")
-            query: str = f"""
+            query: str = """
             INSERT INTO Missions (
                 mission_codename,
                 hero_id,
                 villain_id,
                 city_id,
-                description)
-            VALUES ('{mission_name}',
-                     {hero_id},
-                     {villain_id},
-                     {city_id},
-                    '{description}');
+                description
+            )
+            VALUES (%s, %s, %s, %s, %s);
             """
-            query_commit(query)
+            params = (mission_codename, hero_id, villain_id, city_id, description)
+            query_commit(query, params)
             return redirect(url_for("missions"))
 
     @app.route("/powers-add", methods=['GET', 'POST'])
@@ -351,16 +347,14 @@ try:
         else:
             power_name = request.form.get("name")
             power_description = request.form.get("description")
-            query = f"""
+            query = """
             INSERT INTO Powers (
                 name,
                 description)
-            VALUES (
-                '{power_name}',
-                '{power_description}'
-            );
+            VALUES (%s, %s);
             """
-            query_commit(query)
+            params = (power_name, power_description)
+            query_commit(query, params)
             return redirect(url_for("powers"))
 
     @app.route("/villains-add", methods=['GET', 'POST'])
@@ -400,21 +394,17 @@ try:
             first_name = request.form.get("first_name")
             last_name = request.form.get("last_name")
             last_known_loc = request.form.get("city_id")
-            query = f"""
+            query = """
             INSERT INTO Villains (
                 pseudonym,
                 first_name,
                 last_name,
                 last_known_loc
             )
-            VALUES (
-                "{pseudonym}",
-                "{first_name}",
-                "{last_name}",
-                {last_known_loc}
-            );
+            VALUES (%s, %s, %s, %s);
             """
-            query_commit(query)
+            params = (pseudonym, first_name, last_name, last_known_loc)
+            query_commit(query, params)
 
             # create VillainPower entries
             query = "SELECT LAST_INSERT_ID();"
@@ -428,12 +418,10 @@ try:
                         villain_id,
                         power_id
                     )
-                    VALUES (
-                        {villain_id},
-                        {power_id}
-                    );
+                    VALUES (%s, %s);
                     """
-                    query_commit(query)
+                    params = (villain_id, power_id)
+                    query_commit(query, params)
 
             return redirect(url_for("villains"))
 
@@ -462,14 +450,15 @@ try:
                                        message=query_helper.NO_COUNTRY_NAME,
                                        defaults=defaults,
                                        countries=countries)
-            query: str = f"""
+            query: str = """
             UPDATE Cities
             SET
-                city_name = '{city_name}',
-                country_id = {country_id}
-            WHERE city_id = {id};
+                city_name = %s,
+                country_id = %s
+            WHERE city_id = %s;
             """
-            query_commit(query)
+            params = (city_name, country_id, id)
+            query_commit(query, params)
             return redirect(url_for("cities"))
 
     @app.route("/countries-update/<id>", methods=['GET', 'POST'])
@@ -481,14 +470,15 @@ try:
         else:
             country_name: str = request.form.get("country_name")
             country_code: str = request.form.get("country_code")
-            query: str = f"""
+            query: str = """
             UPDATE Countries
             SET
-                country_name = '{country_name}',
-                country_code = '{country_code}'
-            WHERE country_id = {id};
+                country_name = %s,
+                country_code = %s
+            WHERE country_id = %s;
             """
-            query_commit(query)
+            params = (country_name, country_code, id)
+            query_commit(query, params)
             return redirect(url_for("countries"))
 
     @app.route("/heroes-update/<id>", methods=['GET', 'POST'])
@@ -555,40 +545,40 @@ try:
             first_name = request.form.get("first_name")
             last_name = request.form.get("last_name")
             city_id = request.form.get("city_id")
-            query = f"""
+            query = """
             UPDATE Heroes
             SET
-                pseudonym = '{pseudonym}',
-                first_name = '{first_name}',
-                last_name = '{last_name}',
-                city_id = {city_id}
-            WHERE hero_id = {id};
+                pseudonym = %s,
+                first_name = %s,
+                last_name = %s,
+                city_id = %s
+            WHERE hero_id = %s;
             """
-            query_commit(query)
+            params = (pseudonym, first_name, last_name, city_id, id)
+            query_commit(query, params)
 
             # update HeroPowers table
             # delete all HeroPowers for this hero
-            query = f"""
+            query = """
             DELETE FROM HeroPowers
-            WHERE hero_id = {id};
+            WHERE hero_id = %s;
             """
-            query_commit(query)
+            params = (id,)
+            query_commit(query, params)
             # add or readd HeroPowers for this hero
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
                     power_id = name[9:]
-                    query = f"""
+                    query = """
                     INSERT INTO HeroPowers (
                         hero_id,
                         power_id
                     )
-                    VALUES (
-                        {id},
-                        {power_id}
-                    );
+                    VALUES (%s, %s);
                     """
-                    query_commit(query)
+                    params = (id, power_id)
+                    query_commit(query, params)
 
             return redirect(url_for("heroes"))
 
@@ -605,22 +595,23 @@ try:
                                    villains=villains,
                                    cities=cities)
         else:
-            mission_name: str = request.form.get("mission_name")
+            mission_codename: str = request.form.get("mission_name")
             hero_id: str = request.form.get("hero_id")
             villain_id: str = request.form.get("villain_id")
             city_id: int = int(request.form.get("city_id"))
             description: str = request.form.get("description")
-            query: str = f"""
+            query: str = """
             UPDATE Missions
             SET
-                hero_id = {hero_id},
-                villain_id = {villain_id},
-                city_id = {city_id},
-                mission_codename = '{mission_name}',
-                description = '{description}'
-            WHERE mission_id = {id};
+                hero_id = %s,
+                villain_id = %s,
+                city_id = %s,
+                mission_codename = %s,
+                description = %s
+            WHERE mission_id = %s;
             """
-            query_commit(query)
+            params = (hero_id, villain_id, city_id, mission_codename, description, id)
+            query_commit(query, params)
             return redirect(url_for("missions"))
 
     @app.route("/powers-update/<id>", methods=['GET', 'POST'])
@@ -643,14 +634,15 @@ try:
         else:
             power_name = request.form.get("name")
             power_description = request.form.get("description")
-            query = f"""
+            query = """
             UPDATE Powers
             SET
-                name = '{power_name}',
-                description = '{power_description}'
-            WHERE power_id = {id};
+                name = %s,
+                description = %s
+            WHERE power_id = %s;
             """
-            query_commit(query)
+            params = (power_name, power_description, id)
+            query_commit(query, params)
 
             return redirect(url_for("powers"))
 
@@ -718,40 +710,40 @@ try:
             first_name = request.form.get("first_name")
             last_name = request.form.get("last_name")
             last_known_loc = request.form.get("city_id")
-            query = f"""
+            query = """
             UPDATE Villains
             SET
-                pseudonym = '{pseudonym}',
-                first_name = '{first_name}',
-                last_name = '{last_name}',
-                last_known_loc = {last_known_loc}
-            WHERE villain_id = {id};
+                pseudonym = %s,
+                first_name = %s,
+                last_name = %s,
+                last_known_loc = %s
+            WHERE villain_id = %s;
             """
-            query_commit(query)
+            params = (pseudonym, first_name, last_name, last_known_loc, id)
+            query_commit(query, params)
 
             # update VillainPowers table
             # delete all VillainPowers for this villain
-            query = f"""
+            query = """
             DELETE FROM VillainPowers
-            WHERE villain_id = {id};
+            WHERE villain_id = %s;
             """
-            query_commit(query)
+            params = (id,)
+            query_commit(query, params)
             # add or read VillainPowers for this villain
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
                     power_id = name[9:]
-                    query = f"""
+                    query = """
                     INSERT INTO VillainPowers (
                         villain_id,
                         power_id
                     )
-                    VALUES (
-                        {id},
-                        {power_id}
-                    );
+                    VALUES (%s, %s);
                     """
-                    query_commit(query)
+                    params = (id, power_id)
+                    query_commit(query, params)
 
             return redirect(url_for("villains"))
 

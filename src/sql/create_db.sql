@@ -55,8 +55,8 @@ CREATE TABLE Villains (
 
 CREATE TABLE Missions (
     mission_id INT NOT NULL AUTO_INCREMENT,
-    hero_id INT,
-    villain_id INT,
+    hero_id INT NULL,
+    villain_id INT NULL,
     city_id INT NOT NULL,
     mission_codename VARCHAR(20) NOT NULL,
     description TEXT(1000) NOT NULL,
