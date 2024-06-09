@@ -269,7 +269,11 @@ try:
             # create Hero entry
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
+            if first_name.strip() == "":
+                first_name = "NULL"
             last_name = request.form.get("last_name")
+            if last_name.strip() == "":
+                last_name = "NULL"
             city_id = request.form.get("city_id")
             query = f"""
             INSERT INTO Heroes (
