@@ -215,7 +215,7 @@ th {
     border: 3px solid ;
     border-radius: 2px;
     padding: 2%;
-    height: 10em;
+    height: 20em;
 }
 
 #available-power-list {
@@ -234,8 +234,4 @@ th {
     flex-direction: column;
     text-align: center;
     overflow: scroll;
-}
-
-#available-power-list h4, #chosen-power-list h4 {
-    border-bottom: 2px solid white;
 }
