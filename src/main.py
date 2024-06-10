@@ -9,9 +9,9 @@ import time
 app = Flask(__name__)
 CONFIG = {
     "host":     "classmysql.engr.oregonstate.edu",
-    "user":     "username",
-    "password": "password",
-    "database": "username"
+    "user":     "cs340_leekip",
+    "password": "981bHZzT4e6n",
+    "database": "cs340_leekip"
 }
 conn = mysql.connector.connect(**CONFIG)
 cursor = conn.cursor(dictionary=True)
@@ -20,6 +20,8 @@ cursor = conn.cursor(dictionary=True)
 def connect_to_db():
     global conn
     global cursor
+
+    # try to connect to the database, but give up after 5 attempts
     for _ in range(5):
         try:
             conn = mysql.connector.connect(**CONFIG)
@@ -33,6 +35,7 @@ def connect_to_db():
 
 
 def query_fetch(query: str):
+    # try to execute the query, but give up after 5 attempts
     for _ in range(5):
         try:
             cursor.execute(query)
@@ -53,6 +56,7 @@ def query_fetch(query: str):
 
 
 def query_commit(query: str, params=()) -> None:
+    # try to execute the query, but give up after 5 attempts
     for _ in range(5):
         try:
             cursor.execute(query, params)
@@ -267,6 +271,8 @@ try:
             )
         else:
             # create Hero entry
+            # NULLED items have the value of an empty string,
+            #   and must be set to None for MySQL to recognize them as NULL
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
             if first_name == "":
@@ -319,6 +325,9 @@ try:
                                    villains=villains,
                                    cities=cities)
         else:
+            # create Missions entry
+            # NULLED items have the value of an empty string,
+            #   and must be set to None for MySQL to recognize them as NULL
             mission_codename: str = request.form.get("mission_name")
             hero_id: str = request.form.get("hero_id")
             if hero_id == "":
@@ -392,6 +401,8 @@ try:
             )
         else:
             # create Villain entry
+            # NULLED items have the value of an empty string,
+            #   and must be set to None for MySQL to recognize them as NULL
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
             if first_name == "":
@@ -505,9 +516,9 @@ try:
             WHERE hero_id = {id};
             """
             hero = query_fetch(query)[0]
-            if hero["first_name"] is None:  # TODO: this is a bandaid solution
+            if hero["first_name"] is None:
                 hero["first_name"] = ""
-            if hero["last_name"] is None:  # TODO: this is a bandaid solution
+            if hero["last_name"] is None:
                 hero["last_name"] = ""
 
             # get IDs of hero's powers
@@ -550,7 +561,7 @@ try:
             )
         else:
             # update Heroes table
-            # NULLABLE items have the value of an empty string,
+            # NULLED items have the value of an empty string,
             #   and must be set to None for MySQL to recognize them as NULL
             pseudonym = request.form.get("pseudonym")
             first_name = request.form.get("first_name")
@@ -612,6 +623,9 @@ try:
                                    villains=villains,
                                    cities=cities)
         else:
+            # update Missions table
+            # NULLED items have the value of an empty string,
+            #   and must be set to None for MySQL to recognize them as NULL
             mission_codename: str = request.form.get("mission_name")
             hero_id: str = request.form.get("hero_id")
             if hero_id == "":
@@ -682,9 +696,9 @@ try:
             WHERE villain_id = {id};
             """
             villain = query_fetch(query)[0]
-            if villain["first_name"] is None:  # TODO: this is a bandaid solution
+            if villain["first_name"] is None:
                 villain["first_name"] = ""
-            if villain["last_name"] is None:  # TODO: this is a bandaid solution
+            if villain["last_name"] is None:
                 villain["last_name"] = ""
 
             # get IDs of hero's powers
