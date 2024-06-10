@@ -34,11 +34,11 @@ def connect_to_db():
     time.sleep(1)
 
 
-def query_fetch(query: str):
+def query_fetch(query: str, params: tuple = ()):
     # try to execute the query, but give up after 5 attempts
     for _ in range(5):
         try:
-            cursor.execute(query)
+            cursor.execute(query, params)
             data = cursor.fetchall()
             print("Fetched data")
             return data
@@ -49,13 +49,13 @@ def query_fetch(query: str):
         time.sleep(1)
 
     # try one last time
-    cursor.execute(query)
+    cursor.execute(query, params)
     data = cursor.fetchall()
     print("Failed to fetch data")
     return data
 
 
-def query_commit(query: str, params=()) -> None:
+def query_commit(query: str, params: tuple = ()) -> None:
     # try to execute the query, but give up after 5 attempts
     for _ in range(5):
         try:
@@ -242,14 +242,7 @@ try:
     def heroes_add():
         if request.method == "GET":
             # get cities
-            query = """
-            SELECT
-                city_id,
-                city_name
-            FROM Cities
-            ORDER BY city_name ASC;
-            """
-            cities = query_fetch(query)
+            cities = query_helper.get_cities_data(cursor)
 
             # get powers
             query = """
@@ -372,14 +365,7 @@ try:
     def villains_add():
         if request.method == "GET":
             # get cities
-            query = """
-            SELECT
-                city_id,
-                city_name
-            FROM Cities
-            ORDER BY city_name ASC;
-            """
-            cities = query_fetch(query)
+            cities = query_helper.get_cities_data(cursor)
 
             # get powers
             query = """
@@ -531,14 +517,7 @@ try:
             hero["power_ids"] = [item["power_id"] for item in hero_powers]
 
             # get cities
-            query = """
-            SELECT
-                city_id,
-                city_name
-            FROM Cities
-            ORDER BY city_name ASC;
-            """
-            cities = query_fetch(query)
+            cities = query_helper.get_cities_data(cursor)
 
             # get all powers
             query = """
@@ -585,28 +564,63 @@ try:
             params = (pseudonym, first_name, last_name, city_id, id)
             query_commit(query, params)
 
-            # update HeroPowers table
-            # delete all HeroPowers for this hero
+            # now update HeroPowers entries
+            # get list of powers that Hero already has
             query = """
-            DELETE FROM HeroPowers
+            SELECT power_id
+            FROM HeroPowers
             WHERE hero_id = %s;
             """
             params = (id,)
-            query_commit(query, params)
-            # add or read HeroPowers for this hero
+            old_powers = [item["power_id"] for item in query_fetch(query, params)]
+
+            # get list of user-selected powers (may include powers that Hero already has)
+            new_powers = []
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
-                    power_id = name[9:]
+                    power_id = int(name[9:])
+                    new_powers.append(power_id)
+
+            # get list of powers that were deselected
+            deselected_powers = [power_id for power_id in old_powers if power_id not in new_powers]
+
+            # now remove any pre-existing powers from new powers
+            new_powers = [power_id for power_id in new_powers if power_id not in old_powers]
+
+            # replace power_id of any deslected HeroPowers with newly selected one,
+            # or insert new HeroPower if no deselected ones remain
+            for new_power_id in new_powers:
+                if len(deselected_powers) > 0:
+                    query = """
+                    UPDATE HeroPowers
+                    SET
+                        power_id = %s
+                    WHERE hero_id = %s AND power_id = %s;
+                    """
+                    params = (new_power_id, id, deselected_powers.pop())  # pop power_id to indicate that it has been replaced
+                else:
                     query = """
                     INSERT INTO HeroPowers (
                         hero_id,
                         power_id
                     )
-                    VALUES (%s, %s);
+                    VALUES (
+                        %s,
+                        %s
+                    );
                     """
-                    params = (id, power_id)
-                    query_commit(query, params)
+                    params = (id, new_power_id)
+                query_commit(query, params)
+
+            # delete remaining deselected HeroPowers
+            for deselected_power_id in deselected_powers:
+                query = """
+                DELETE FROM HeroPowers
+                WHERE hero_id = %s AND power_id = %s;
+                """
+                params = (id, deselected_power_id)
+                query_commit(query, params)
 
             return redirect(url_for("heroes"))
 
@@ -701,7 +715,7 @@ try:
             if villain["last_name"] is None:
                 villain["last_name"] = ""
 
-            # get IDs of hero's powers
+            # get IDs of villain's powers
             query = f"""
             SELECT power_id
             FROM VillainPowers
@@ -711,14 +725,7 @@ try:
             villain["power_ids"] = [item["power_id"] for item in villain_powers]
 
             # get cities
-            query = """
-            SELECT
-                city_id,
-                city_name
-            FROM Cities
-            ORDER BY city_name ASC;
-            """
-            cities = query_fetch(query)
+            cities = query_helper.get_cities_data(cursor)
 
             # get all powers
             query = """
@@ -763,28 +770,63 @@ try:
             params = (pseudonym, first_name, last_name, last_known_loc, id)
             query_commit(query, params)
 
-            # update VillainPowers table
-            # delete all VillainPowers for this villain
+            # now update VillainPowers entries
+            # get list of powers that Villain already has
             query = """
-            DELETE FROM VillainPowers
+            SELECT power_id
+            FROM VillainPowers
             WHERE villain_id = %s;
             """
             params = (id,)
-            query_commit(query, params)
-            # add or read VillainPowers for this villain
+            old_powers = [item["power_id"] for item in query_fetch(query, params)]
+
+            # get list of user-selected powers (may include powers that Villain already has)
+            new_powers = []
             for name, _ in request.form.items():
                 prefix = name[:9]
                 if prefix == "power_id:":  # if power checkbox was selected
-                    power_id = name[9:]
+                    power_id = int(name[9:])
+                    new_powers.append(power_id)
+
+            # get list of powers that were deselected
+            deselected_powers = [power_id for power_id in old_powers if power_id not in new_powers]
+
+            # now remove any pre-existing powers from new powers
+            new_powers = [power_id for power_id in new_powers if power_id not in old_powers]
+
+            # replace power_id of any deslected VillainPowers with newly selected one,
+            # or insert new VillainPower if no deselected ones remain
+            for new_power_id in new_powers:
+                if len(deselected_powers) > 0:
+                    query = """
+                    UPDATE VillainPowers
+                    SET
+                        power_id = %s
+                    WHERE villain_id = %s AND power_id = %s;
+                    """
+                    params = (new_power_id, id, deselected_powers.pop())  # pop power_id to indicate that it has been replaced
+                else:
                     query = """
                     INSERT INTO VillainPowers (
                         villain_id,
                         power_id
                     )
-                    VALUES (%s, %s);
+                    VALUES (
+                        %s,
+                        %s
+                    );
                     """
-                    params = (id, power_id)
-                    query_commit(query, params)
+                    params = (id, new_power_id)
+                query_commit(query, params)
+
+            # delete remaining deselected VillainPowers
+            for deselected_power_id in deselected_powers:
+                query = """
+                DELETE FROM VillainPowers
+                WHERE villain_id = %s AND power_id = %s;
+                """
+                params = (id, deselected_power_id)
+                query_commit(query, params)
 
             return redirect(url_for("villains"))
 

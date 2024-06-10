@@ -92,6 +92,18 @@ VALUES (:hero_id, :power_id);
 INSERT INTO VillainPowers (villain_id, power_id)
 VALUES (:villain_id, :power_id);
 
+/* Update the power associated with a HeroPowers entry */
+UPDATE HeroPowers
+SET
+    power_id = :new_power_id
+WHERE hero_id = :hero_id AND power_id = :power_id;
+
+/* Update the power associated with a VillainPowers entry */
+UPDATE VillainPowers
+SET
+    power_id = :new_power_id
+WHERE villain_id = :villain_id AND power_id = :power_id;
+
 /* UPDATE entry for Countries with the : character being used to denote the variables that will
    have data from Python
 */
