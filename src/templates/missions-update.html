@@ -23,7 +23,7 @@
         <h3 class="error-message">{{ message }}</h3>
         <form action="/missions-update/{{defaults.mission_id}}" method="post">
             <label for="mission_name">Mission Codename: </label>
-            <input type="text" id="mission_name" name="mission_name" value="{{defaults.mission_codename}}"><br>
+            <input type="text" id="mission_name" name="mission_name" value="{{defaults.mission_codename}}" required><br>
             <label for="hero_name">Hero Name: </label>
             <select id="hero_name" name="hero_id">
                 <option value="">Select a hero (or choose this to leave blank)</option>
@@ -40,7 +40,7 @@
             </select>
             <label for="city_name">City Name: </label>
             <select id="city_name" name="city_id" required>
-                <option disabled>Select a city</option>
+                <option value="" disabled>Select a city</option>
                 {% for city in cities %}
                     <option value="{{ city.city_id }}" {% if city.city_id == defaults.city_id %}selected{% endif %}>{{ city.city_name }}</option>
                 {% endfor %}

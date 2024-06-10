@@ -40,7 +40,7 @@
             </select>
             <label for="city_name">City Name: </label>
             <select id="city_name" name="city_id" required>
-                <option disabled selected>Select a city</option>
+                <option value="" disabled selected>Select a city</option>
                 {% for city in cities %}
                     <option value="{{ city.city_id }}">{{ city.city_name }}</option>
                 {% endfor %}
